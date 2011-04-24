@@ -4,6 +4,7 @@ TARG = ircd-novo
 
 GOFILES = \
 	ircd.go \
-	messages.go \
+	log_process.go \
+	messages.go
 
 include $(GOROOT)/src/Make.cmd
