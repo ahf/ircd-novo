@@ -7,6 +7,7 @@ GOFILES = \
 	ircd.go \
 	log_process.go \
 	messages.go \
-	numerics.go
+	numerics.go \
+	string_utilities.go
 
 include $(GOROOT)/src/Make.cmd
