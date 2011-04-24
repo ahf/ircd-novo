@@ -37,14 +37,16 @@ import (
 type LogLevel int
 
 const (
-    Silent LogLevel = iota
+    Debug LogLevel = iota
     Warning
-    Debug
+    Information
+    Silent
 )
 
 func (l LogLevel) String() string {
     switch l {
         case Silent: return "Silent"
+        case Information: return "Information"
         case Warning: return "Warning"
         case Debug: return "Debug"
     }
