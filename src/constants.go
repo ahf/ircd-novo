@@ -28,10 +28,8 @@
 
 package main
 
-import (
-    "fmt"
+const (
+    VersionName = "ircd-novo"
+    VersionNumber = "0.1"
+    VersionFull = VersionName + " " + VersionNumber
 )
-
-func main() {
-    fmt.Printf("%s starting ...\n", VersionFull)
-}
