@@ -91,9 +91,9 @@ func (r *RawMessage) String() string {
         value := e.Value.(string)
 
         if e == r.arguments.Back() {
-            a = a + "'" + value + "'"
+            a = a + SingleQuote(value)
         } else {
-            a = a + "'" + value + "', "
+            a = a + SingleQuote(value) + ", "
         }
     }
 
