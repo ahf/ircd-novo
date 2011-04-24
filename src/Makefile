@@ -3,6 +3,7 @@ include $(GOROOT)/src/Make.inc
 TARG = ircd-novo
 
 GOFILES = \
-	ircd.go
+	ircd.go \
+	messages.go \
 
 include $(GOROOT)/src/Make.cmd
