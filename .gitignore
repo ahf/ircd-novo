@@ -1,0 +1,3 @@
+*.log
+/src/ircd-novo
+_go_.6
