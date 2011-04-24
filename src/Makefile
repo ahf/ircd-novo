@@ -2,6 +2,7 @@ include $(GOROOT)/src/Make.inc
 
 TARG = ircd-novo
 
-GOFILES =
+GOFILES = \
+	ircd.go
 
 include $(GOROOT)/src/Make.cmd
