@@ -37,10 +37,11 @@ import (
     "fmt"
     "hash"
     "os"
+    "strings"
 )
 
 func F(h hash.Hash, name, str string) {
-    h.Write([]byte(str))
+    h.Write([]byte(strings.Trim(str, "\n")))
     fmt.Printf("%s\t: '%x'\n", name, h.Sum())
 }
 
