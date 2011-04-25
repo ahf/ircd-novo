@@ -54,17 +54,54 @@ func (l LogLevel) String() string {
     panic("Unhandled Loglevel")
 }
 
-func CreateLogMessage(ll LogLevel, format string, arguments ...interface{}) string {
-    return "(" + ll.String() + "): " + fmt.Sprintf(format, arguments...)
+type Log struct {
+    process *LogProcess
+    log_level LogLevel
+}
+
+func NewLog(filename string) *Log {
+    return &Log{NewLogProcess(filename), Debug}
+}
+
+func (log *Log) IsRunning() bool {
+    r := make(chan bool)
+    go log.process.IsRunning(r)
+    return <-r
+}
+
+func (log *Log) SetLogLevel(ll LogLevel) {
+    log.log_level = ll
+}
+
+func (log *Log) Log(ll LogLevel, message string) {
+    log.LogF(ll, "%s", message)
+}
+
+func (log *Log) LogF(ll LogLevel, format string, arguments ...interface{}) {
+    if ll == Silent {
+        panic("Using LogLevel 'Silent' does not make sense here")
+    }
+
+    if ll >= log.log_level && log.IsRunning() {
+        log.process.log_chan <- formatMessage(ll, format, arguments...)
+    }
+}
+
+func (log *Log) Shutdown() {
+    if log.IsRunning() {
+        log.process.stop_chan <- true
+    } else {
+        panic("Trying to Shutdown() a dead LogProcess")
+    }
 }
 
 type LogProcess struct {
-    logger *log.Logger
+    stop_chan chan bool
+    log_chan chan string
+
     file *os.File
-    command_channel chan logProcessCommand
-    logging_channel chan string
-    valid bool
-    log_level LogLevel
+    running bool
+    logger *log.Logger
 }
 
 func NewLogProcess(filename string) *LogProcess {
@@ -75,66 +112,43 @@ func NewLogProcess(filename string) *LogProcess {
     }
 
     logger := log.New(file, nil, "", log.Ldate | log.Ltime)
-    command_channel := make(chan logProcessCommand)
-    logging_channel := make(chan string)
 
-    lp := LogProcess{logger, file, command_channel, logging_channel, true, Silent}
+    stop_chan := make(chan bool)
+    log_chan  := make(chan string)
 
+    lp := &LogProcess{stop_chan, log_chan, file, false, logger}
     go func() {
+        if lp.running {
+            panic("Trying to start an already running LogProcess")
+        }
+
+        lp.running = true
+        defer lp.Shutdown()
+
         for {
             select {
-                case message := <-lp.logging_channel:
+                case message := <-lp.log_chan:
                     lp.logger.Log(message)
-                case command := <-lp.command_channel:
-                    lp.logger.Log(CreateLogMessage(Debug, "Received '%s' Command Message", command.String()))
 
-                    switch command {
-                        case closeCommand:
-                            return
-                    }
+                case <-lp.stop_chan:
+                    return
             }
         }
     }()
 
-    return &lp
+    return lp
 }
 
-func (s *LogProcess) LogF(ll LogLevel, format string, arguments ...interface{}) {
-    if ll == Silent {
-        panic("Using LogLevel 'Silent' does not make sense here")
-    }
-
-    if s.valid && ll >= s.log_level {
-        s.logging_channel <- CreateLogMessage(ll, format, arguments...)
-    }
+func (process *LogProcess) IsRunning(r chan bool) {
+    r <-process.running
 }
 
-func (s *LogProcess) Log(ll LogLevel, message string) {
-    s.LogF(ll, "%s", message)
+func (process *LogProcess) Shutdown() {
+    defer process.file.Close()
+    process.logger.Log(formatMessage(Debug, "Shutting Down Logging Process"))
+    process.running = false
 }
 
-func (s *LogProcess) SetLogLevel(ll LogLevel) {
-    s.log_level = ll
-}
-
-func (s *LogProcess) Close() {
-    if s.valid {
-        s.command_channel <- closeCommand
-        s.valid = false
-        s.file.Close()
-    }
-}
-
-type logProcessCommand int
-
-const (
-    closeCommand logProcessCommand = iota
-)
-
-func (l logProcessCommand) String() string {
-    switch l {
-        case closeCommand: return "Close"
-    }
-
-    panic("Unhandled logProcessCommand")
+func formatMessage(ll LogLevel, format string, arguments ...interface{}) string {
+    return "(" + ll.String() + "): " + fmt.Sprintf(format, arguments...)
 }
