@@ -111,7 +111,7 @@ func NewLogProcess(filename string) *LogProcess {
         panic("Error: " + error.String())
     }
 
-    logger := log.New(file, nil, "", log.Ldate | log.Ltime)
+    logger := log.New(file, "", log.Ldate | log.Ltime)
 
     stop_chan := make(chan bool)
     log_chan  := make(chan string)
@@ -128,7 +128,7 @@ func NewLogProcess(filename string) *LogProcess {
         for {
             select {
                 case message := <-lp.log_chan:
-                    lp.logger.Log(message)
+                    lp.logger.Print(message)
 
                 case <-lp.stop_chan:
                     return
@@ -145,7 +145,7 @@ func (process *LogProcess) IsRunning(r chan bool) {
 
 func (process *LogProcess) Shutdown() {
     defer process.file.Close()
-    process.logger.Log(formatMessage(Debug, "Shutting Down Logging Process"))
+    process.logger.Print(formatMessage(Debug, "Shutting Down Logging Process"))
     process.running = false
 }
 
