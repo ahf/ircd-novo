@@ -1,3 +1,4 @@
 *.log
 /src/ircd-novo
+/utils/novo-mkpsaswd/novo-mkpsaswd
 _go_.6
