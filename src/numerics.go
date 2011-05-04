@@ -229,6 +229,7 @@ const (
     ERR_HELPNOTFOUND        = 524
 
     RPL_WHOISSECURE         = 671
+    RPL_WHOISWEBSOCKET      = 672 /* Ircd-novo Extension. */
     RPL_MODLIST             = 702
     RPL_ENDOFMODLIST        = 703
     RPL_HELPSTART           = 704
@@ -414,6 +415,7 @@ var replies = map[Numeric] string {
     ERR_WRONGPONG:          ":%s 513 %s :To connect type /QUOTE PONG %08lX",
     ERR_HELPNOTFOUND:       ":%s 524 %s %s :Help not found",
     RPL_WHOISSECURE:        "%s :is using a secure connection",
+    RPL_WHOISWEBSOCKET      "%s :is using a WebSocket connection",
     RPL_MODLIST:            ":%s 702 %s %s 0x%p %s %s",
     RPL_ENDOFMODLIST:       ":%s 703 %s :End of /MODLIST.",
     RPL_HELPSTART:          ":%s 704 %s %s :%s",
