@@ -1,6 +1,6 @@
 include $(GOROOT)/src/Make.inc
 
 TARG = novo-mkpasswd
-GOFILES = mkpasswd.go
+GOFILES = novo-mkpasswd.go
 
 include $(GOROOT)/src/Make.cmd
