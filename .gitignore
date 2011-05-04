@@ -2,6 +2,6 @@
 *.pem
 /src/ircd-novo
 /utils/novo-genssl/novo-genssl
-/utils/novo-mkpsaswd/novo-mkpsaswd
+/utils/novo-mkpasswd/novo-mkpasswd
 /utils/wsnc/wsnc
 _go_.6
