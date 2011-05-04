@@ -1,4 +1,7 @@
 *.log
+*.pem
 /src/ircd-novo
+/utils/novo-genssl/novo-genssl
 /utils/novo-mkpsaswd/novo-mkpsaswd
+/utils/wsnc/wsnc
 _go_.6
