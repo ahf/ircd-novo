@@ -64,8 +64,13 @@ func main() {
 
     go func() {
         for {
-            s, _ := rw.ReadString('\n')
+            s, error := rw.ReadString('\n')
             s = Strip(s)
+
+            if error != nil {
+                fmt.Printf("Error: %s\n", error.String())
+                os.Exit(1)
+            }
 
             if len(s) == 0 {
                 continue
