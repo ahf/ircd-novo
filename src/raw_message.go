@@ -53,24 +53,24 @@ func nextToken(s *string) string {
     return token
 }
 
-func ParseMessage(line string) *RawMessage {
+func ParseRawMessage(message string) *RawMessage {
     var prefix string
     var arguments []string
 
-    if strings.HasPrefix(line, ":") {
-        line = line[1:]
-        prefix = nextToken(&line)
+    if strings.HasPrefix(message, ":") {
+        message = message[1:]
+        prefix = nextToken(&message)
     }
 
-    command := nextToken(&line)
+    command := nextToken(&message)
 
-    for len(line) != 0 {
-        if strings.HasPrefix(line, ":") {
-            arguments = append(arguments, line[1:])
+    for len(message) != 0 {
+        if strings.HasPrefix(message, ":") {
+            arguments = append(arguments, message[1:])
             break
         }
 
-        token := nextToken(&line)
+        token := nextToken(&message)
         arguments = append(arguments, token)
     }
 
