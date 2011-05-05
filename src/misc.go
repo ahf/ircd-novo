@@ -38,6 +38,14 @@ const (
     valid_hostname = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-"
 )
 
+func Strip(s string) string {
+    return strings.Trim(s, " \r\n")
+}
+
+func SingleQuote(s string) string {
+    return "'" + s + "'"
+}
+
 func IsValidNickname(n string) bool {
     return strings.IndexAny(n, valid_nickname) != -1
 }
