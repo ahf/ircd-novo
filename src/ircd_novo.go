@@ -34,4 +34,7 @@ import (
 
 func main() {
     fmt.Printf("%s starting ...\n", VersionFull)
+
+    fmt.Printf("%s\n", ParseMessage("NICK a").String())
+    fmt.Printf("%s\n", ParseMessage(":irc.0x90.dk 005 ahf_ FNC TARGMAX=NAMES:1,LIST:1,KICK:1,WHOIS:1,PRIVMSG:4,NOTICE:4,ACCEPT:,MONITOR: :are supported by this server").String())
 }

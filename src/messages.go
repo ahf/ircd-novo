@@ -29,7 +29,6 @@
 package main
 
 import (
-    "container/list"
     "fmt"
     "strings"
 )
@@ -56,6 +55,7 @@ func nextToken(s *string) string {
 
 func ParseMessage(line string) *RawMessage {
     var prefix string
+    var arguments []string
 
     if strings.HasPrefix(line, ":") {
         line = line[1:]
@@ -63,16 +63,15 @@ func ParseMessage(line string) *RawMessage {
     }
 
     command := nextToken(&line)
-    arguments := list.New()
 
     for len(line) != 0 {
         if strings.HasPrefix(line, ":") {
-            arguments.PushBack(line[1:])
+            arguments = append(arguments, line[1:])
             break
         }
 
         token := nextToken(&line)
-        arguments.PushBack(token)
+        arguments = append(arguments, token)
     }
 
     return &RawMessage{prefix, command, arguments}
@@ -81,25 +80,24 @@ func ParseMessage(line string) *RawMessage {
 type RawMessage struct {
     prefix string
     command string
-    arguments *list.List
+    arguments []string
 }
 
 func (r *RawMessage) String() string {
     a := "["
+    final := len(r.arguments) - 1
 
-    for e := r.arguments.Front(); e != nil; e = e.Next() {
-        value := e.Value.(string)
-
-        if e == r.arguments.Back() {
-            a = a + SingleQuote(value)
+    for i := range r.arguments {
+        if i == final {
+            a = a + SingleQuote(r.arguments[i])
         } else {
-            a = a + SingleQuote(value) + ", "
+            a = a + SingleQuote(r.arguments[i]) + ", "
         }
     }
 
     a = a + "]"
 
-    return fmt.Sprintf("Command = '%s', Parameters (Count: %d) = %s and Prefix = '%s'", r.command, r.arguments.Len(), a, r.prefix)
+    return fmt.Sprintf("Prefix: '%s', Command: '%s', Parameters: %s, Count: %d", r.prefix, r.command, a, len(r.arguments))
 }
 
 func (r *RawMessage) Command() string {
@@ -110,6 +108,6 @@ func (r *RawMessage) Prefix() string {
     return r.prefix
 }
 
-func (r *RawMessage) Arguments() *list.List {
+func (r *RawMessage) Arguments() []string {
     return r.arguments
 }
