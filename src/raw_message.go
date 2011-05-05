@@ -33,50 +33,6 @@ import (
     "strings"
 )
 
-func nextToken(s *string) string {
-    if s == nil {
-        return ""
-    }
-
-    i := strings.Index(*s, " ")
-
-    if i == -1 {
-        tmp := *s
-        *s = ""
-        return tmp
-    }
-
-    token := (*s)[:i]
-    rest := (*s)[i + 1:]
-    *s = rest
-
-    return token
-}
-
-func ParseRawMessage(message string) *RawMessage {
-    var prefix string
-    var arguments []string
-
-    if strings.HasPrefix(message, ":") {
-        message = message[1:]
-        prefix = nextToken(&message)
-    }
-
-    command := nextToken(&message)
-
-    for len(message) != 0 {
-        if strings.HasPrefix(message, ":") {
-            arguments = append(arguments, message[1:])
-            break
-        }
-
-        token := nextToken(&message)
-        arguments = append(arguments, token)
-    }
-
-    return &RawMessage{prefix, command, arguments}
-}
-
 type RawMessage struct {
     prefix string
     command string
@@ -111,3 +67,47 @@ func (r *RawMessage) Prefix() string {
 func (r *RawMessage) Arguments() []string {
     return r.arguments
 }
+func ParseRawMessage(message string) *RawMessage {
+    var prefix string
+    var arguments []string
+
+    if strings.HasPrefix(message, ":") {
+        message = message[1:]
+        prefix = nextToken(&message)
+    }
+
+    command := nextToken(&message)
+
+    for len(message) != 0 {
+        if strings.HasPrefix(message, ":") {
+            arguments = append(arguments, message[1:])
+            break
+        }
+
+        token := nextToken(&message)
+        arguments = append(arguments, token)
+    }
+
+    return &RawMessage{prefix, command, arguments}
+}
+
+func nextToken(s *string) string {
+    if s == nil {
+        return ""
+    }
+
+    i := strings.Index(*s, " ")
+
+    if i == -1 {
+        tmp := *s
+        *s = ""
+        return tmp
+    }
+
+    token := (*s)[:i]
+    rest := (*s)[i + 1:]
+    *s = rest
+
+    return token
+}
+
