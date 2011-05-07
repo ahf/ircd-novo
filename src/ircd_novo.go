@@ -34,4 +34,18 @@ import (
 
 func main() {
     fmt.Printf("%s starting ...\n", VersionFull)
+
+    ircd := NewIrcd()
+
+    ircd.SetCertificate("server.pem", "server.key.pem")
+
+    ircd.AddListener(TCP, ":6667")
+    ircd.AddListener(WebSocket, ":8080")
+    ircd.AddSecureListener(TCP, ":6697")
+    ircd.AddSecureListener(WebSocket, ":8081")
+
+    ircd.Listen()
+
+    ch := make(chan bool)
+    <-ch
 }
