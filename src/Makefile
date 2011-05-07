@@ -2,7 +2,9 @@ include $(GOROOT)/src/Make.inc
 
 TARG = ircd-novo
 GOFILES = \
+	client_connection_handler.go \
 	ircd_novo.go \
+	listeners.go \
 	misc.go \
 	numerics.go \
 	raw_message.go \
