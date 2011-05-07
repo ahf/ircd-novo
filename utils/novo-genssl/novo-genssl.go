@@ -63,7 +63,7 @@ func main() {
         ErrorF("Error: Unable to generate private key: %s\n", error)
     }
 
-    private_key_file, error := os.Open(*hostname + ".key.pem", os.O_WRONLY | os.O_CREAT, 0600)
+    private_key_file, error := os.OpenFile(*hostname + ".key.pem", os.O_WRONLY | os.O_CREATE, 0600)
 
     if error != nil {
         ErrorF("Error: Unable to open %s for writing: %s\n", *hostname + ".key.pem", error)
@@ -92,7 +92,7 @@ func main() {
         ErrorF("Error: Unable to generate certificate: %s\n", error)
     }
 
-    certificate_file, error := os.Open(*hostname + ".pem", os.O_WRONLY | os.O_CREAT, 0644)
+    certificate_file, error := os.OpenFile(*hostname + ".pem", os.O_WRONLY | os.O_CREATE, 0644)
 
     if error != nil {
         ErrorF("Error: Unable to open %s for writing: %s\n", *hostname + ".pem", error)
