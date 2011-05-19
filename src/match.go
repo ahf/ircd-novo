@@ -49,3 +49,22 @@ func IsValidUserName(username string) bool {
 func IsValidHostName(hostname string) bool {
     return strings.IndexAny(hostname, valid_hostname) != -1
 }
+
+func Collapse(s string) string {
+    var r string
+    got_star := false
+
+    for i := range s {
+        if s[i] == '*' {
+            if ! got_star {
+                r = r + "*"
+                got_star = true
+            }
+        } else {
+            r = r + string(s[i])
+            got_star = false
+        }
+    }
+
+    return r
+}
