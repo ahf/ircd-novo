@@ -6,6 +6,7 @@ GOFILES = \
 	ircd.go \
 	ircd_novo.go \
 	listeners.go \
+	match.go \
 	misc.go \
 	numerics.go \
 	raw_message.go \

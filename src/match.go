@@ -32,10 +32,20 @@ import (
     "strings"
 )
 
-func Strip(s string) string {
-    return strings.Trim(s, " \r\n")
+const (
+    valid_nickname = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\\|[]{}`^_-"
+    valid_username = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-"
+    valid_hostname = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-"
+)
+
+func IsValidNickName(nickname string) bool {
+    return strings.IndexAny(nickname, valid_nickname) != -1
 }
 
-func SingleQuote(s string) string {
-    return "'" + s + "'"
+func IsValidUserName(username string) bool {
+    return strings.IndexAny(username, valid_username) != -1
+}
+
+func IsValidHostName(hostname string) bool {
+    return strings.IndexAny(hostname, valid_hostname) != -1
 }
