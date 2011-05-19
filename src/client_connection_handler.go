@@ -53,6 +53,5 @@ func ClientConnectionHandler(connection net.Conn, remoteAddr string) {
         if len(line) == 0 {
             continue
         }
-
     }
 }
