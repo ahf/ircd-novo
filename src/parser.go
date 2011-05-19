@@ -33,41 +33,41 @@ import (
     "strings"
 )
 
-type RawMessage struct {
+type ParsedMessage struct {
     prefix string
     command string
     arguments []string
 }
 
-func (r *RawMessage) String() string {
+func (this *ParsedMessage) String() string {
     a := "["
-    final := len(r.arguments) - 1
+    final := len(this.arguments) - 1
 
-    for i := range r.arguments {
+    for i := range this.arguments {
         if i == final {
-            a = a + SingleQuote(r.arguments[i])
+            a = a + SingleQuote(this.arguments[i])
         } else {
-            a = a + SingleQuote(r.arguments[i]) + ", "
+            a = a + SingleQuote(this.arguments[i]) + ", "
         }
     }
 
     a = a + "]"
 
-    return fmt.Sprintf("Prefix: '%s', Command: '%s', Parameters: %s, Count: %d", r.prefix, r.command, a, len(r.arguments))
+    return fmt.Sprintf("Prefix: '%s', Command: '%s', Parameters: %s, Length: %d", this.prefix, this.command, a, len(this.arguments))
 }
 
-func (r *RawMessage) Command() string {
-    return r.command
+func (this *ParsedMessage) Command() string {
+    return this.command
 }
 
-func (r *RawMessage) Prefix() string {
-    return r.prefix
+func (this *ParsedMessage) Prefix() string {
+    return this.prefix
 }
 
-func (r *RawMessage) Arguments() []string {
-    return r.arguments
+func (this *ParsedMessage) Arguments() []string {
+    return this.arguments
 }
-func ParseRawMessage(message string) *RawMessage {
+func Parse(message string) *ParsedMessage {
     var prefix string
     var arguments []string
 
@@ -88,7 +88,7 @@ func ParseRawMessage(message string) *RawMessage {
         arguments = append(arguments, token)
     }
 
-    return &RawMessage{prefix, command, arguments}
+    return &ParsedMessage{prefix, command, arguments}
 }
 
 func nextToken(s *string) string {
@@ -110,4 +110,3 @@ func nextToken(s *string) string {
 
     return token
 }
-

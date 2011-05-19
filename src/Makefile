@@ -9,7 +9,7 @@ GOFILES = \
 	match.go \
 	misc.go \
 	numerics.go \
-	raw_message.go \
+	parser.go \
 	version.go \
 
 include $(GOROOT)/src/Make.cmd
