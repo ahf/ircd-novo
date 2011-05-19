@@ -49,6 +49,18 @@ var stripTests = []stripTestCase {
     stripTestCase{"goat\r\r\r", "goat"},
 }
 
+type joinTestCase struct {
+    input []string
+    expected string
+}
+
+var joinTests = []joinTestCase {
+    joinTestCase{[]string{}, "[]"},
+    joinTestCase{[]string{"a"}, "[a]"},
+    joinTestCase{[]string{"a", "b", "c"}, "[a, b, c]"},
+    joinTestCase{[]string{"foo", "bar", "baz"}, "[foo, bar, baz]"},
+}
+
 func TestStrip(t *testing.T) {
     for i := range stripTests {
         test := stripTests[i]
@@ -56,6 +68,17 @@ func TestStrip(t *testing.T) {
 
         if result != test.expected {
             t.Errorf("Strip('%s') = '%s', want '%s'.", test.input, result, test.expected)
+        }
+    }
+}
+
+func TestJoin(t *testing.T) {
+    for i := range joinTests {
+        test := joinTests[i]
+        result := Join(test.input)
+
+        if result != test.expected {
+            t.Errorf("Join('%s') = '%s', want '%s'.", Join(test.input), result, test.expected)
         }
     }
 }
