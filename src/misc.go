@@ -36,6 +36,6 @@ func Strip(s string) string {
     return strings.Trim(s, " \r\n")
 }
 
-func SingleQuote(s string) string {
-    return "'" + s + "'"
+func Join(s []string) string {
+    return "[" + strings.Join(s, ", ") + "]"
 }
