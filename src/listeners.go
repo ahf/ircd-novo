@@ -95,12 +95,13 @@ type BasicListener struct {
     secure SecurityLevel
     protocol Protocol
     listener net.Listener
+    ircd *Ircd
 }
 
-func NewBasicListener() *BasicListener {
+func NewBasicListener(ircd *Ircd) *BasicListener {
     logger := log.New(os.Stderr, "", log.Ldate | log.Ltime)
 
-    return &BasicListener{logger, Insecure, TCP, nil}
+    return &BasicListener{logger, Insecure, TCP, nil, ircd}
 }
 
 func (this *BasicListener) Protocol() Protocol {
@@ -119,16 +120,16 @@ func (this *BasicListener) Listen() {
     panic("Listeners must implement Listen() themselves.")
 }
 
-func (this *BasicListener) ConnectionHandler(connection net.Conn, remoteAddr string) {
+func (this *BasicListener) ConnectionHandler(ircd *Ircd, connection net.Conn, remoteAddr string) {
     this.Printf("Incoming Connection from %s to %s (%s %s)", remoteAddr, this.Address(), this.Secure(), this.Protocol())
-    ClientConnectionHandler(connection, remoteAddr)
+    ClientConnectionHandler(ircd, connection, remoteAddr)
 }
 
 type TCPListener struct {
     *BasicListener
 }
 
-func NewTCPListener(a string, config *tls.Config) *TCPListener {
+func NewTCPListener(ircd *Ircd, a string, config *tls.Config) *TCPListener {
     var listener net.Listener
     address, error := net.ResolveTCPAddr("TCP", a)
     secure := Insecure
@@ -149,7 +150,7 @@ func NewTCPListener(a string, config *tls.Config) *TCPListener {
         secure = Secure
     }
 
-    bl := NewBasicListener()
+    bl := NewBasicListener(ircd)
     bl.listener = listener
     bl.secure = secure
 
@@ -166,7 +167,7 @@ func (this *TCPListener) Listen() {
         }
 
         // Set the RemoteAddr here because of Go Bug #1636
-        go this.ConnectionHandler(connection, connection.RemoteAddr().String())
+        go this.ConnectionHandler(this.ircd, connection, connection.RemoteAddr().String())
     }
 }
 
@@ -174,8 +175,8 @@ type WebSocketListener struct {
     *TCPListener
 }
 
-func NewWebSocketListener(a string, config *tls.Config) *WebSocketListener {
-    wsl := &WebSocketListener{NewTCPListener(a, config)}
+func NewWebSocketListener(ircd *Ircd, a string, config *tls.Config) *WebSocketListener {
+    wsl := &WebSocketListener{NewTCPListener(ircd, a, config)}
     wsl.protocol = WebSocket
     return wsl
 }
@@ -184,6 +185,6 @@ func (this *WebSocketListener) Listen() {
     http.Serve(this.listener, websocket.Handler(func (connection *websocket.Conn) {
         // The HTTP package creates the goroutine itself. No need for us to do it.
         // Set the RemoteAddr here because of Go Bug #1636
-        this.ConnectionHandler(connection, connection.Request.RemoteAddr)
+        this.ConnectionHandler(this.ircd, connection, connection.Request.RemoteAddr)
     }))
 }

@@ -34,7 +34,7 @@ import (
     "os"
 )
 
-func ClientConnectionHandler(connection net.Conn, remoteAddr string) {
+func ClientConnectionHandler(ircd *Ircd, connection net.Conn, remoteAddr string) {
     defer connection.Close()
 
     rw := bufio.NewReadWriter(bufio.NewReader(connection), bufio.NewWriter(connection))

@@ -73,8 +73,8 @@ func (this *Ircd) addCommonListener(p Protocol, address string, config *tls.Conf
     var listener Listener
 
     switch p {
-        case TCP: listener = NewTCPListener(address, config)
-        case WebSocket: listener = NewWebSocketListener(address, config)
+        case TCP: listener = NewTCPListener(this, address, config)
+        case WebSocket: listener = NewWebSocketListener(this, address, config)
         default: panic("Unhandled Protocol.")
     }
 
@@ -130,4 +130,8 @@ func (this *Ircd) Run() {
         this.Printf("Listening on %s (%s %s)", listener.Address(), listener.Secure(), listener.Protocol())
         go listener.Listen()
     }
+}
+
+func (this *Ircd) Me() string {
+    return this.config.Ircd.ServerInfo.Name
 }
