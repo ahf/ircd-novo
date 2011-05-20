@@ -1,0 +1,53 @@
+{
+    "Ircd": {
+        "ServerInfo": {
+            "name": "irc.example.org",
+            "description": "Test ircd-novo server.",
+            "tls": {
+                "certificate": "...",
+                "key": "..."
+            }
+        },
+        "NetworkInfo": {
+            "name": "Example Network",
+            "description": "This is an example IRC network."
+        },
+        "AdminInfo": {
+            "name": "John Doe",
+            "description": "BOFH",
+            "email": "john.doe@example.org"
+        },
+        "Listeners": [
+            {
+                "host": "127.0.0.1",
+                "port": 6667,
+                "type": "TCP",
+                "tls": false
+            },
+            {
+                "host": "::1",
+                "port": 6697,
+                "type": "TCP",
+                "tls": true
+            },
+            {
+                "host": "irc.example.org",
+                "port": 8080,
+                "type": "WebSocket",
+                "tls": true
+            }
+        ],
+        "Operators": [
+            {
+                "name": "ahf",
+                "matches": [
+                    "*@*"
+                ],
+                "password": {
+                    "hash": "7c4a8d09ca3762af61e59520943dc26494f8941b",
+                    "type": "SHA1"
+                }
+            }
+        ]
+    }
+}
