@@ -4,8 +4,8 @@
             "name": "irc.example.org",
             "description": "Test ircd-novo server.",
             "tls": {
-                "certificate": "...",
-                "key": "..."
+                "certificate": "",
+                "key": ""
             }
         },
         "NetworkInfo": {
@@ -31,7 +31,7 @@
                 "tls": true
             },
             {
-                "host": "irc.example.org",
+                "host": "127.0.0.1",
                 "port": 8080,
                 "type": "WebSocket",
                 "tls": true
