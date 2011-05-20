@@ -31,28 +31,45 @@ package main
 import (
     "crypto/rand"
     "crypto/tls"
+    "fmt"
     "log"
     "os"
+    "strconv"
     "time"
 )
 type Ircd struct {
     *log.Logger
     listeners []Listener
 
-    certificateFile *string
-    keyFile *string
+    config *ConfigurationFile
 }
 
 func NewIrcd() *Ircd {
-    return &Ircd{log.New(os.Stderr, "", log.Ldate | log.Ltime), make([]Listener, 0), nil, nil}
+    return &Ircd{log.New(os.Stderr, "", log.Ldate | log.Ltime), make([]Listener, 0), nil}
 }
 
-func (this *Ircd) SetCertificate(certificate, key string) {
-    this.certificateFile = &certificate
-    this.keyFile = &key
+func (this *Ircd) SetConfigurationFile(config *ConfigurationFile) {
+    this.config = config
+
+    for i := range this.config.Ircd.Listeners {
+        listener := this.config.Ircd.Listeners[i]
+        hostport := listener.Host + ":" + strconv.Itoa(listener.Port)
+        protocol := ProtocolFromString(listener.Type)
+
+        if protocol == nil {
+            this.Printf("Unknown protocol type: %s\n", listener.Type)
+            continue
+        }
+
+        if listener.Tls {
+            this.addSecureListener(*protocol, hostport)
+        } else {
+            this.addListener(*protocol, hostport)
+        }
+    }
 }
 
-func (this *Ircd) addListener(p Protocol, address string, config *tls.Config) {
+func (this *Ircd) addCommonListener(p Protocol, address string, config *tls.Config) {
     var listener Listener
 
     switch p {
@@ -66,17 +83,20 @@ func (this *Ircd) addListener(p Protocol, address string, config *tls.Config) {
     }
 }
 
-func (this *Ircd) AddListener(protocol Protocol, address string) {
-    this.addListener(protocol, address, nil)
+func (this *Ircd) addListener(protocol Protocol, address string) {
+    this.addCommonListener(protocol, address, nil)
 }
 
-func (this *Ircd) AddSecureListener(protocol Protocol, address string) {
-    if this.certificateFile == nil || this.keyFile == nil {
+func (this *Ircd) addSecureListener(protocol Protocol, address string) {
+    cert := this.config.Ircd.ServerInfo.Tls.Certificate
+    key := this.config.Ircd.ServerInfo.Tls.Key
+
+    if cert == "" || key == "" {
         this.Printf("Unable to add secure listener. Missing certificate or key file")
         return
     }
 
-    cert, error := tls.LoadX509KeyPair(*this.certificateFile, *this.keyFile)
+    certificate, error := tls.LoadX509KeyPair(cert, key)
 
     if error != nil {
         this.Printf("Error Loading Certificate: %s", error)
@@ -89,16 +109,21 @@ func (this *Ircd) AddSecureListener(protocol Protocol, address string) {
     }
 
     config.Certificates = make([]tls.Certificate, 1)
-    config.Certificates[0] = cert
+    config.Certificates[0] = certificate
 
     if protocol == WebSocket {
         config.NextProtos = []string{"http/1.1"}
     }
 
-    this.addListener(protocol, address, config)
+    this.addCommonListener(protocol, address, config)
 }
 
-func (this *Ircd) Listen() {
+func (this *Ircd) Run() {
+    if len(this.listeners) == 0 {
+        fmt.Printf("Error: No Listeners Defined...\n")
+        os.Exit(1)
+    }
+
     for i := range this.listeners {
         listener := this.listeners[i]
 

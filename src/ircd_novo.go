@@ -30,22 +30,32 @@ package main
 
 import (
     "fmt"
+    "io/ioutil"
+    "os"
 )
 
 func main() {
     fmt.Printf("%s starting ...\n", VersionFull)
 
+    content, error := ioutil.ReadFile("../doc/ircd.example.json")
+
+    if error != nil {
+        fmt.Printf("Error: %s\n", error)
+        os.Exit(1)
+    }
+
+    config, error := NewConfigurationFile(content)
+
+    if error != nil {
+        fmt.Printf("Configuration Error: %s\n", error)
+        os.Exit(1)
+    }
+
     ircd := NewIrcd()
+    ircd.SetConfigurationFile(config)
+    ircd.Run()
 
-    ircd.SetCertificate("server.pem", "server.key.pem")
-
-    ircd.AddListener(TCP, ":6667")
-    ircd.AddListener(WebSocket, ":8080")
-    ircd.AddSecureListener(TCP, ":6697")
-    ircd.AddSecureListener(WebSocket, ":8081")
-
-    ircd.Listen()
-
+    // Block Forever :-)
     ch := make(chan bool)
     <-ch
 }

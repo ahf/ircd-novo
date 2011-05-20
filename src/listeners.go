@@ -34,6 +34,7 @@ import (
     "log"
     "net"
     "os"
+    "strings"
     "websocket"
 )
 
@@ -43,6 +44,19 @@ const (
     TCP Protocol = iota
     WebSocket
 )
+
+func ProtocolFromString(p string) *Protocol {
+    switch strings.ToLower(p) {
+        case "websocket":
+            w := WebSocket
+            return &w
+        case "tcp":
+            t := TCP
+            return &t
+    }
+
+    return nil
+}
 
 func (this Protocol) String() string {
     switch this {
