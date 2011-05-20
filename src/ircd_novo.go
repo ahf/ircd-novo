@@ -29,15 +29,19 @@
 package main
 
 import (
+    "flag"
     "fmt"
     "io/ioutil"
     "os"
 )
 
+var config = flag.String("config", "ircd.json", "Path to configuration file.")
+
 func main() {
+    flag.Parse()
     fmt.Printf("%s starting ...\n", VersionFull)
 
-    content, error := ioutil.ReadFile("../doc/ircd.example.json")
+    content, error := ioutil.ReadFile(*config)
 
     if error != nil {
         fmt.Printf("Error: %s\n", error)
