@@ -90,9 +90,15 @@ func (this *Ircd) addListener(protocol Protocol, address string) {
 func (this *Ircd) addSecureListener(protocol Protocol, address string) {
     cert := this.config.Ircd.ServerInfo.Tls.Certificate
     key := this.config.Ircd.ServerInfo.Tls.Key
+    errorMessage := fmt.Sprintf("Unable to add secure listener for %s", address)
 
-    if cert == "" || key == "" {
-        this.Printf("Unable to add secure listener. Missing certificate or key file")
+    if cert == "" {
+        this.Printf("%s: %s", errorMessage, "Empty TLS certificate in configuration file.")
+        return
+    }
+
+    if key == "" {
+        this.Printf("%s: %s", errorMessage, "Empty TLS key in configuration file.")
         return
     }
 
