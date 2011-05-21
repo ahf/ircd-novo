@@ -2,6 +2,7 @@ include $(GOROOT)/src/Make.inc
 
 TARG = ircd-novo
 GOFILES = \
+	client.go \
 	config.go \
 	hash.go \
 	ircd.go \
