@@ -152,6 +152,10 @@ func (this *Ircd) Me() string {
     return this.config.Ircd.ServerInfo.Name
 }
 
+func (this *Ircd) Description() string {
+    return this.config.Ircd.ServerInfo.Description
+}
+
 func (this *Ircd) SetMotdFile(path string) {
     this.motd_file = path
 
