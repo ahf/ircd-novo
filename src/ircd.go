@@ -46,12 +46,15 @@ type Ircd struct {
 
     motd_file string
     motd_content []string
+
+    clientRegistry *ClientRegistry
 }
 
 func NewIrcd() *Ircd {
     ircd := new(Ircd)
     ircd.Logger = log.New(os.Stderr, "", log.Ldate | log.Ltime)
     ircd.listeners = make([]Listener, 0)
+    ircd.clientRegistry = NewClientRegistry()
 
     return ircd
 }
