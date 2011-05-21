@@ -32,20 +32,28 @@ import (
     "crypto/rand"
     "crypto/tls"
     "fmt"
+    "io/ioutil"
     "log"
     "os"
     "strconv"
+    "strings"
     "time"
 )
 type Ircd struct {
     *log.Logger
     listeners []Listener
-
     config *ConfigurationFile
+
+    motd_file string
+    motd_content []string
 }
 
 func NewIrcd() *Ircd {
-    return &Ircd{log.New(os.Stderr, "", log.Ldate | log.Ltime), make([]Listener, 0), nil}
+    ircd := new(Ircd)
+    ircd.Logger = log.New(os.Stderr, "", log.Ldate | log.Ltime)
+    ircd.listeners = make([]Listener, 0)
+
+    return ircd
 }
 
 func (this *Ircd) SetConfigurationFile(config *ConfigurationFile) {
@@ -140,4 +148,21 @@ func (this *Ircd) Run() {
 
 func (this *Ircd) Me() string {
     return this.config.Ircd.ServerInfo.Name
+}
+
+func (this *Ircd) SetMotdFile(path string) {
+    this.motd_file = path
+
+    this.LoadMotd()
+}
+
+func (this *Ircd) LoadMotd() {
+    content, error := ioutil.ReadFile(this.motd_file)
+
+    if error != nil {
+        this.Printf("Unable to load MOTD file: %s", error)
+        return
+    }
+
+    this.motd_content = strings.Split(string(content), "\n", -1)
 }

@@ -36,6 +36,7 @@ import (
 )
 
 var config = flag.String("config", "ircd.json", "Path to configuration file.")
+var motd = flag.String("motd", "ircd.motd", "Path to MOTD file.")
 
 func main() {
     flag.Parse()
@@ -57,6 +58,7 @@ func main() {
 
     ircd := NewIrcd()
     ircd.SetConfigurationFile(config)
+    ircd.SetMotdFile(*motd)
     ircd.Run()
 
     // Block Forever :-)
