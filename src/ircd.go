@@ -44,8 +44,8 @@ type Ircd struct {
     listeners []Listener
     config *ConfigurationFile
 
-    motd_file string
-    motd_content []string
+    motdFile string
+    motdContent []string
 
     clientRegistry *ClientRegistry
 }
@@ -160,18 +160,18 @@ func (this *Ircd) Description() string {
 }
 
 func (this *Ircd) SetMotdFile(path string) {
-    this.motd_file = path
+    this.motdFile = path
 
     this.LoadMotd()
 }
 
 func (this *Ircd) LoadMotd() {
-    content, error := ioutil.ReadFile(this.motd_file)
+    content, error := ioutil.ReadFile(this.motdFile)
 
     if error != nil {
         this.Printf("Unable to load MOTD file: %s", error)
         return
     }
 
-    this.motd_content = strings.Split(string(content), "\n", -1)
+    this.motdContent = strings.Split(string(content), "\n", -1)
 }
