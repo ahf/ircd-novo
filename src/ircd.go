@@ -176,6 +176,14 @@ func (this *Ircd) LoadMotd() {
     this.motdContent = strings.Split(string(content), "\n", -1)
 }
 
+func (this *Ircd) Motd() *[]string {
+    if len(this.motdContent) == 0 {
+        return nil
+    }
+
+    return &this.motdContent
+}
+
 func (this *Ircd) FindClient(nick string) *Client {
     return this.clientRegistry.Find(nick)
 }
