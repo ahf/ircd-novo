@@ -138,6 +138,8 @@ func (this *Ircd) Run() {
         os.Exit(1)
     }
 
+    this.Printf("Opening up for incoming connections")
+
     for i := range this.listeners {
         listener := this.listeners[i]
 
