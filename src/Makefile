@@ -15,6 +15,7 @@ GOFILES = \
 	misc.go \
 	numerics.go \
 	parser.go \
+	ping_handler.go \
 	version.go \
 
 include $(GOROOT)/src/Make.cmd
