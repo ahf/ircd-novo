@@ -17,6 +17,7 @@ GOFILES = \
 	parser.go \
 	ping_handler.go \
 	privmsg_handler.go \
+	quit_handler.go \
 	version.go \
 
 include $(GOROOT)/src/Make.cmd
