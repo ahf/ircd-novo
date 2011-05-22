@@ -11,6 +11,7 @@ GOFILES = \
 	ircd_novo.go \
 	listeners.go \
 	match.go \
+	message_handler.go \
 	misc.go \
 	numerics.go \
 	parser.go \
