@@ -54,7 +54,7 @@ func NewIrcd() *Ircd {
     ircd := new(Ircd)
     ircd.Logger = log.New(os.Stderr, "", log.Ldate | log.Ltime)
     ircd.listeners = make([]Listener, 0)
-    ircd.clientRegistry = NewClientRegistry()
+    ircd.clientRegistry = NewClientRegistry(ircd)
 
     return ircd
 }
@@ -186,4 +186,12 @@ func (this *Ircd) Motd() *[]string {
 
 func (this *Ircd) FindClient(nick string) *Client {
     return this.clientRegistry.Find(nick)
+}
+
+func (this *Ircd) RegisterClient(client *Client) bool {
+    return this.clientRegistry.Register(client)
+}
+
+func (this *Ircd) UnregisterClient(client *Client) {
+    this.clientRegistry.Unregister(client)
 }

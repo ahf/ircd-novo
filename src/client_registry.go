@@ -29,12 +29,14 @@
 package main
 
 type ClientRegistry struct {
+    ircd *Ircd
+
     // Maps nicknames to a Client.
     clients map[string] *Client
 }
 
-func NewClientRegistry() *ClientRegistry {
-    return &ClientRegistry{make(map[string] *Client)}
+func NewClientRegistry(ircd *Ircd) *ClientRegistry {
+    return &ClientRegistry{ircd, make(map[string] *Client)}
 }
 
 func (this *ClientRegistry) Find(nick string) *Client {
@@ -43,4 +45,24 @@ func (this *ClientRegistry) Find(nick string) *Client {
     }
 
     return nil
+}
+
+func (this *ClientRegistry) Register(client *Client) bool {
+    this.Printf("Registering %s", client.Nickname())
+
+    if _, exists := this.clients[client.Nickname()]; exists {
+        return false
+    }
+
+    this.clients[client.Nickname()] = client
+    return true
+}
+
+func (this *ClientRegistry) Unregister(client *Client) {
+    this.Printf("Unregistering %s", client)
+    this.clients[client.Nickname()] = nil, false
+}
+
+func (this *ClientRegistry) Printf(format string, a...interface{}) {
+    this.ircd.Printf(format, a...)
 }
