@@ -25,16 +25,16 @@
                 "tls": false
             },
             {
-                "host": "::1",
+                "host": "127.0.0.1",
                 "port": 6697,
                 "type": "TCP",
-                "tls": true
+                "tls": false
             },
             {
                 "host": "127.0.0.1",
                 "port": 8080,
                 "type": "WebSocket",
-                "tls": true
+                "tls": false
             }
         ],
         "Operators": [
