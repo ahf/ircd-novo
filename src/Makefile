@@ -5,6 +5,7 @@ GOFILES = \
 	client.go \
 	client_registry.go \
 	config.go \
+	dns.go \
 	hash.go \
 	ircd.go \
 	ircd_novo.go \
