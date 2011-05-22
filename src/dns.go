@@ -32,16 +32,10 @@ import (
     "net"
 )
 
-func LookupAddress(address string) chan string {
+func LookupAddress(ip string) chan string {
     r := make(chan string)
 
     go func() {
-        ip, _, error := net.SplitHostPort(address)
-
-        if error != nil {
-            panic("Bug: Unable to split remote address.")
-        }
-
         names, error := net.LookupAddr(ip)
 
         if error != nil {
