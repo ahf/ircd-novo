@@ -33,29 +33,29 @@ import (
     "strings"
 )
 
-type ParsedMessage struct {
+type Message struct {
     prefix string
     command string
     arguments []string
 }
 
-func (this *ParsedMessage) String() string {
+func (this *Message) String() string {
     a := Join(this.arguments)
     return fmt.Sprintf("Prefix: '%s', Command: '%s', Arguments: %s, Length: %d", this.prefix, this.command, a, len(this.arguments))
 }
 
-func (this *ParsedMessage) Command() string {
+func (this *Message) Command() string {
     return this.command
 }
 
-func (this *ParsedMessage) Prefix() string {
+func (this *Message) Prefix() string {
     return this.prefix
 }
 
-func (this *ParsedMessage) Arguments() []string {
+func (this *Message) Arguments() []string {
     return this.arguments
 }
-func Parse(message string) *ParsedMessage {
+func Parse(message string) *Message {
     var prefix string
     var arguments []string
 
@@ -76,7 +76,7 @@ func Parse(message string) *ParsedMessage {
         arguments = append(arguments, token)
     }
 
-    return &ParsedMessage{prefix, command, arguments}
+    return &Message{prefix, command, arguments}
 }
 
 func nextToken(s *string) string {
