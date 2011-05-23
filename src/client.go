@@ -37,12 +37,10 @@ import (
 )
 
 type Client struct {
-    input chan string // Raw Input.
-    output chan string // Raw Output.
-    messages chan *Message // Parsed IRC Messages.
+    input chan *Message // Parsed IRC messages.
+    output chan string // Output.
 
     output_quit chan bool // Leave the Output Handler.
-    message_handler_quit chan bool // Leave the Message Handler.
     protocol_handler_quit chan bool // Leave the (Un)registered protocol handler.
 
     nickname string // The Nickname of the client.
@@ -69,14 +67,12 @@ func NewClient(ircd *Ircd, connection net.Conn, remoteAddr string) {
     client.ircd = ircd
 
     // Channels.
-    client.input = make(chan string)
+    client.input = make(chan *Message)
     client.output = make(chan string)
-    client.messages = make(chan *Message)
 
     // Quit Channels.  These are being used to signal to each of our client
     // processes that it's time to exit.
     client.output_quit = make(chan bool)
-    client.message_handler_quit = make(chan bool)
     client.protocol_handler_quit = make(chan bool)
 
     // RemoteAddr is on the form "IP:Port". Split it.
@@ -121,11 +117,6 @@ func NewClient(ircd *Ircd, connection net.Conn, remoteAddr string) {
 
     // Socket Input Handler.
     go client.InputHandler()
-
-    // Message Handler.  Takes a raw input string and converts it into a parsed
-    // Message and sends it on to the ProtocolHandler (Either registered or
-    // unregistered).
-    go client.MessageHandler()
 
     // Unregistered Protocol Handler.  The Unregistered Protocol Handler only
     // accepts either the NICK or USER command. Once the client has been
@@ -180,8 +171,18 @@ func (this *Client) InputHandler() {
             continue
         }
 
-        // Pass on to the ProtocolHandler (Either Registered or Unregistered).
-        this.input<-line
+        // Parse.
+        message := Parse(line)
+
+        // Most ASCII strings are valid IRC commands, but in the
+        // unlikely case that Parse() returns nil, we'll simply skip
+        // it.
+        if message != nil {
+            this.Printf("-> '%s'", message)
+
+            // Pass on to the ProtocolHandler (Either Registered or Unregistered).
+            this.input<-message
+        }
     }
 }
 
@@ -190,8 +191,8 @@ func (this *Client) OutputHandler() {
     defer this.Printf("Leaving Socket Output Handler")
 
     defer func () {
-        this.Printf("Sending Quit-message to the Message Handler")
-        this.message_handler_quit<-true
+        this.Printf("Sending Quit-message to the Protocol Handler")
+        this.protocol_handler_quit<-true
     }()
 
     rw := this.readwriter
@@ -230,45 +231,6 @@ func (this *Client) OutputHandler() {
     }
 }
 
-func (this *Client) MessageHandler() {
-    this.Printf("Entering Message Handler")
-    defer this.Printf("Leaving Message Handler")
-
-    defer func () {
-        this.Printf("Sending Quit-message to the Protocol Handler")
-        this.protocol_handler_quit<-true
-    }()
-
-
-    for {
-        select {
-            case line, ok := <-this.input:
-                if ! ok {
-                    // The client is dead.
-                    // FIXME: Shouldn't happen.
-                    return
-                }
-
-                message := Parse(line)
-
-                // Most ASCII strings are valid IRC commands, but in the
-                // unlikely case that Parse() returns nil, we'll simply skip
-                // it.
-                if message != nil {
-                    this.Printf("-> '%s'", message)
-
-                    // Pass on to the Protocol Handler.
-                    this.messages<-message
-                }
-
-            case <-this.message_handler_quit:
-                // We are done.
-                // Notify the Protocol Handler that we quit.
-                return
-        }
-    }
-}
-
 func (this *Client) UnregisteredProtocolHandler(sync chan bool) {
     this.Printf("Entering Unregistered Client Protocol Handler")
     defer this.Printf("Leaving Unregistered Client Protocol Handler")
@@ -287,7 +249,7 @@ func (this *Client) UnregisteredProtocolHandler(sync chan bool) {
 
     for {
         select {
-            case message, ok := <-this.messages:
+            case message, ok := <-this.input:
                 if ! ok {
                     // This client is dead.
                     // FIXME: Shouldn't happen.
@@ -398,7 +360,7 @@ func (this *Client) RegisteredProtocolHandler() {
 
     for {
         select {
-            case message, ok := <-this.messages:
+            case message, ok := <-this.input:
                 if ! ok {
                     // The client is dead.
                     // FIXME: Shouldn't happen.
