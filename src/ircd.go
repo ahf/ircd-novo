@@ -35,7 +35,6 @@ import (
     "io/ioutil"
     "log"
     "os"
-    "strconv"
     "strings"
     "time"
 )
@@ -64,8 +63,9 @@ func (this *Ircd) SetConfigurationFile(config *ConfigurationFile) {
 
     for i := range this.config.Ircd.Listeners {
         listener := this.config.Ircd.Listeners[i]
-        hostport := listener.Host + ":" + strconv.Itoa(listener.Port)
         protocol := ProtocolFromString(listener.Type)
+        host := listener.Host
+        port := listener.Port
 
         if protocol == nil {
             this.Printf("Unknown protocol type: %s\n", listener.Type)
@@ -73,35 +73,39 @@ func (this *Ircd) SetConfigurationFile(config *ConfigurationFile) {
         }
 
         if listener.Tls {
-            this.addSecureListener(*protocol, hostport)
+            this.addSecureListener(*protocol, host, port)
         } else {
-            this.addListener(*protocol, hostport)
+            this.addListener(*protocol, host, port)
         }
     }
 }
 
-func (this *Ircd) addCommonListener(p Protocol, address string, config *tls.Config) {
+func (this *Ircd) addCommonListener(p Protocol, address string, port int, config *tls.Config) {
     var listener Listener
+    var error os.Error
 
     switch p {
-        case TCP: listener = NewTCPListener(this, address, config)
-        case WebSocket: listener = NewWebSocketListener(this, address, config)
+        case TCP: listener, error = NewTCPListener(this, address, port, config)
+        case WebSocket: listener, error = NewWebSocketListener(this, address, port, config)
         default: panic("Unhandled Protocol.")
     }
 
-    if listener != nil {
-        this.listeners = append(this.listeners, listener)
+    if error != nil {
+        this.Printf("Error: %s", error)
+        return
     }
+
+    this.listeners = append(this.listeners, listener)
 }
 
-func (this *Ircd) addListener(protocol Protocol, address string) {
-    this.addCommonListener(protocol, address, nil)
+func (this *Ircd) addListener(protocol Protocol, address string, port int) {
+    this.addCommonListener(protocol, address, port, nil)
 }
 
-func (this *Ircd) addSecureListener(protocol Protocol, address string) {
+func (this *Ircd) addSecureListener(protocol Protocol, address string, port int) {
     cert := this.config.Ircd.ServerInfo.Tls.Certificate
     key := this.config.Ircd.ServerInfo.Tls.Key
-    errorMessage := fmt.Sprintf("Unable to add secure listener for %s", address)
+    errorMessage := fmt.Sprintf("Unable to add secure listener for %s:%d", address, port)
 
     if cert == "" {
         this.Printf("%s: %s", errorMessage, "Empty TLS certificate in configuration file.")
@@ -132,7 +136,7 @@ func (this *Ircd) addSecureListener(protocol Protocol, address string) {
         config.NextProtos = []string{"http/1.1"}
     }
 
-    this.addCommonListener(protocol, address, config)
+    this.addCommonListener(protocol, address, port, config)
 }
 
 func (this *Ircd) Run() {

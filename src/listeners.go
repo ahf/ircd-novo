@@ -30,6 +30,7 @@ package main
 
 import (
     "crypto/tls"
+    "fmt"
     "http"
     "log"
     "net"
@@ -129,21 +130,28 @@ type TCPListener struct {
     *BasicListener
 }
 
-func NewTCPListener(ircd *Ircd, a string, config *tls.Config) *TCPListener {
+func NewTCPListener(ircd *Ircd, address string, port int, config *tls.Config) (*TCPListener, os.Error) {
     var listener net.Listener
-    address, error := net.ResolveTCPAddr("TCP", a)
     secure := Insecure
 
+    // Go is slightly silly here. The IPv6 form, in Go, is "[::1]:6667" whereas
+    // the IPv4 form is "127.0.0.1:6667". Let's try to satisfy both parties by
+    // firstly trying with 'a:6667' and if that fails retry with '[a]:6667'.
+    finalAddress, error := net.ResolveTCPAddr("TCP", address)
+
     if error != nil {
-        return nil
+        finalAddress, error = net.ResolveTCPAddr("TCP", fmt.Sprintf("[%s]:%d", address, port))
+
+        if error != nil {
+            return nil, error
+        }
     }
 
-    listener, error = net.ListenTCP(address.Network(), address)
+    listener, error = net.ListenTCP(finalAddress.Network(), finalAddress)
 
     if error != nil {
-        return nil
+        return nil, error
     }
-
 
     if config != nil {
         listener = tls.NewListener(listener, config)
@@ -154,7 +162,7 @@ func NewTCPListener(ircd *Ircd, a string, config *tls.Config) *TCPListener {
     bl.listener = listener
     bl.secure = secure
 
-    return &TCPListener{bl}
+    return &TCPListener{bl}, nil
 }
 
 func (this *TCPListener) Listen() {
@@ -175,10 +183,16 @@ type WebSocketListener struct {
     *TCPListener
 }
 
-func NewWebSocketListener(ircd *Ircd, a string, config *tls.Config) *WebSocketListener {
-    wsl := &WebSocketListener{NewTCPListener(ircd, a, config)}
+func NewWebSocketListener(ircd *Ircd, address string, port int, config *tls.Config) (*WebSocketListener, os.Error) {
+    t, error := NewTCPListener(ircd, address, port, config)
+
+    if error != nil {
+        return nil, error
+    }
+
+    wsl := &WebSocketListener{t}
     wsl.protocol = WebSocket
-    return wsl
+    return wsl, nil
 }
 
 func (this *WebSocketListener) Listen() {
