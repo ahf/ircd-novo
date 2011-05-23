@@ -76,31 +76,31 @@ var collapseTests = []collapseTestCase {
     collapseTestCase{"*foobar**", "*foobar*"},
 }
 
-func TestIsValidNickName(t *testing.T) {
+func TestIsValidNickname(t *testing.T) {
     for i := range nickNameTests {
         test := nickNameTests[i]
 
-        if IsValidNickName(test.s) != test.r {
+        if IsValidNickname(test.s) != test.r {
             t.Errorf("Validation of nickname '%s' failed.", test.s)
         }
     }
 }
 
-func TestIsValidUserName(t *testing.T) {
+func TestIsValidUsername(t *testing.T) {
     for i := range userNameTests {
         test := userNameTests[i]
 
-        if IsValidUserName(test.s) != test.r {
+        if IsValidUsername(test.s) != test.r {
             t.Errorf("Validation of username '%s' failed.", test.s)
         }
     }
 }
 
-func TestIsValidHostName(t *testing.T) {
+func TestIsValidHostname(t *testing.T) {
     for i := range hostNameTests {
         test := hostNameTests[i]
 
-        if IsValidUserName(test.s) != test.r {
+        if IsValidUsername(test.s) != test.r {
             t.Errorf("Validation of hostname '%s' failed.", test.s)
         }
     }

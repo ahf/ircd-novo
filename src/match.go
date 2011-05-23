@@ -38,15 +38,15 @@ const (
     valid_hostname = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-"
 )
 
-func IsValidNickName(nickname string) bool {
+func IsValidNickname(nickname string) bool {
     return strings.IndexAny(nickname, valid_nickname) != -1
 }
 
-func IsValidUserName(username string) bool {
+func IsValidUsername(username string) bool {
     return strings.IndexAny(username, valid_username) != -1
 }
 
-func IsValidHostName(hostname string) bool {
+func IsValidHostname(hostname string) bool {
     return strings.IndexAny(hostname, valid_hostname) != -1
 }
 

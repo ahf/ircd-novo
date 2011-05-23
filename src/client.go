@@ -308,7 +308,7 @@ func (this *Client) UnregisteredProtocolHandler(sync chan bool) {
                         n := args[0]
 
                         // Check if the nickname is valid.
-                        if ! IsValidNickName(n) {
+                        if ! IsValidNickname(n) {
                             this.SendNumeric(ERR_ERRONEUSNICKNAME, ircd.Me(), "*", n)
                             continue
                         }
@@ -333,7 +333,7 @@ func (this *Client) UnregisteredProtocolHandler(sync chan bool) {
                         r := args[3]
 
                         // Check if the username is valid.
-                        if ! IsValidUserName(u) {
+                        if ! IsValidUsername(u) {
                             // FIXME: Handle ...
                         }
 
