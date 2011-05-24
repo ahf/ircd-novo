@@ -56,6 +56,8 @@ type Client struct {
 
     ircd *Ircd // Pointer to our IRCd.
 
+    channels *ChannelSet // Channels.
+
     // Housekeeping (FIXME: Needs refactoring).
     isRegistered bool
 }
@@ -65,6 +67,9 @@ func NewClient(ircd *Ircd, connection net.Conn, remoteAddr string) {
 
     // The IRCd.
     client.ircd = ircd
+
+    // IRC Channels.
+    client.channels = NewChannelSet()
 
     // Channels.
     client.input = make(chan *Message)
@@ -453,6 +458,10 @@ func (this *Client) Close() {
     this.connection.Close()
 }
 
+func (this *Client) PrivateMessage(message *PrivateMessage) {
+    this.WriteString(message.String())
+}
+
 func (this *Client) Printf(format string, a...interface{}) {
     this.ircd.Printf(this.String() + ": " + format, a...)
 }
@@ -479,6 +488,16 @@ func (this *Client) Hostname() string {
 
 func (this *Client) Realname() string {
     return this.realname
+}
+
+func (this *Client) Join(channel *Channel) {
+    channel.Join(this)
+    this.channels.Insert(channel)
+}
+
+func (this *Client) Part(channel *Channel) {
+    channel.Part(this)
+    this.channels.Delete(channel)
 }
 
 // FIXME: Should die in a refactoring session. Only needed by the
