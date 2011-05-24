@@ -343,7 +343,7 @@ var replies = map[Numeric] string {
     RPL_ENDOFEXCEPTLIST:    ":%s 349 %s %s :End of Channel Exception List",
     RPL_VERSION:            "%s(%s). %s :%s TS%dow %s",
     RPL_WHOREPLY:           ":%s 352 %s %s %s %s %s %s %s :%d %s",
-    RPL_NAMREPLY:           ":%s 353 %s %s %s :",
+    RPL_NAMREPLY:           ":%s 353 %s %s %s :%s",
     RPL_CLOSING:            ":%s 362 %s %s :Closed. Status = %d",
     RPL_CLOSEEND:           ":%s 363 %s %d :Connections Closed",
     RPL_LINKS:              "%s %s :%d %s",
