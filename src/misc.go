@@ -39,3 +39,7 @@ func Strip(s string) string {
 func Join(s []string) string {
     return "[" + strings.Join(s, ", ") + "]"
 }
+
+func ToLower(s string) string {
+    return strings.ToLower(s)
+}
