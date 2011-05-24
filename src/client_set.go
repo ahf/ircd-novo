@@ -61,3 +61,15 @@ func (this *ClientSet) ForEach(f func (*Client)) {
 func (this *ClientSet) Len() int {
     return len(this.clients)
 }
+
+func (this *ClientSet) Names() []string {
+    r := make([]string, len(this.clients))
+    i := 0
+
+    for client := range this.clients {
+        r[i] = client.Nickname()
+        i++
+    }
+
+    return r
+}
