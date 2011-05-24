@@ -55,3 +55,7 @@ func (this *ChannelSet) ForEach(f func (*Channel)) {
         f(channel)
     }
 }
+
+func (this *ChannelSet) Len() int {
+    return len(this.channels)
+}
