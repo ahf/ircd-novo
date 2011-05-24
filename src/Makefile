@@ -20,6 +20,7 @@ GOFILES = \
 	numerics.go \
 	parser.go \
 	ping_handler.go \
+	private_message.go \
 	privmsg_handler.go \
 	quit_handler.go \
 	version.go \
