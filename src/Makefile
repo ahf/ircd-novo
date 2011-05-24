@@ -4,6 +4,7 @@ TARG = ircd-novo
 GOFILES = \
 	client.go \
 	client_registry.go \
+	client_set.go \
 	config.go \
 	dns.go \
 	hash.go \
