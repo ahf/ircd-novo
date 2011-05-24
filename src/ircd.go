@@ -47,6 +47,7 @@ type Ircd struct {
     motdContent []string
 
     clientRegistry *ClientRegistry
+    channelRegistry *ChannelRegistry
 }
 
 func NewIrcd() *Ircd {
@@ -54,6 +55,7 @@ func NewIrcd() *Ircd {
     ircd.Logger = log.New(os.Stderr, "", log.Ldate | log.Ltime)
     ircd.listeners = make([]Listener, 0)
     ircd.clientRegistry = NewClientRegistry(ircd)
+    ircd.channelRegistry = NewChannelRegistry(ircd)
 
     return ircd
 }
@@ -198,4 +200,16 @@ func (this *Ircd) RegisterClient(client *Client) bool {
 
 func (this *Ircd) UnregisterClient(client *Client) {
     this.clientRegistry.Unregister(client)
+}
+
+func (this *Ircd) FindChannel(name string) *Channel {
+    return this.channelRegistry.Find(name)
+}
+
+func (this *Ircd) FindOrCreateChannel(name string) *Channel {
+    return this.channelRegistry.FindOrCreate(name)
+}
+
+func (this *Ircd) UnregisterChannel(channel *Channel) {
+    this.channelRegistry.Unregister(channel)
 }
