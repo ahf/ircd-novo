@@ -13,12 +13,14 @@ GOFILES = \
 	hash.go \
 	ircd.go \
 	ircd_novo.go \
+	join_handler.go \
 	listeners.go \
 	match.go \
 	message_handler.go \
 	misc.go \
 	numerics.go \
 	parser.go \
+	part_handler.go \
 	ping_handler.go \
 	private_message.go \
 	privmsg_handler.go \

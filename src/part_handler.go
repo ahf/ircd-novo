@@ -29,48 +29,30 @@
 package main
 
 func init() {
-    RegisterMessageHandler("PRIVMSG", PrivmsgHandler)
+    RegisterMessageHandler("PART", PartHandler)
 }
 
-func PrivmsgHandler(source *Client, message *Message) {
-    cmd := message.Command()
+func PartHandler(client *Client, message *Message) {
     args := message.Arguments()
-    count := len(args)
-    ircd := source.Ircd()
+    ircd := client.Ircd()
 
-    if count < 1 {
-        source.SendNumeric(ERR_NORECIPIENT, ircd.Me(), source.Nickname(), cmd)
+    if len(args) < 1 {
+        client.SendNumeric(ERR_NEEDMOREPARAMS, ircd.Me(), client.Nickname(), message.Command())
         return
     }
 
-    if count < 2 {
-        source.SendNumeric(ERR_NOTEXTTOSEND, ircd.Me(), source.Nickname())
+    // Channel Name.
+    name := args[0]
+
+    // The Channel.
+    channel := ircd.FindChannel(name)
+
+    // Handle bogus input.
+    if channel == nil {
+        // FIXME: ...
         return
     }
 
-    target := args[0]
-    text := args[1]
-
-    // Create our message.
-    msg := NewPrivateMessage(source, target, text)
-
-    // Try to find a client.
-    client := ircd.FindClient(target)
-
-    if client != nil {
-        // client.WriteStringF(":%s PRIVMSG %s :%s", source, n.Nickname(), text)
-        client.PrivateMessage(msg)
-        return
-    }
-
-    // No client found? Look for a channel.
-    channel := ircd.FindChannel(target)
-
-    if channel != nil {
-        channel.PrivateMessage(msg)
-        return
-    }
-
-    // Error out:
-    // FIXME: No Such Nick/Chan...
+    // Part it.
+    client.Part(channel)
 }

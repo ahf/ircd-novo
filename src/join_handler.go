@@ -29,48 +29,26 @@
 package main
 
 func init() {
-    RegisterMessageHandler("PRIVMSG", PrivmsgHandler)
+    RegisterMessageHandler("JOIN", JoinHandler)
 }
 
-func PrivmsgHandler(source *Client, message *Message) {
-    cmd := message.Command()
+func JoinHandler(client *Client, message *Message) {
     args := message.Arguments()
-    count := len(args)
-    ircd := source.Ircd()
+    ircd := client.Ircd()
 
-    if count < 1 {
-        source.SendNumeric(ERR_NORECIPIENT, ircd.Me(), source.Nickname(), cmd)
+    if len(args) < 1 {
+        client.SendNumeric(ERR_NEEDMOREPARAMS, ircd.Me(), client.Nickname(), message.Command())
         return
     }
 
-    if count < 2 {
-        source.SendNumeric(ERR_NOTEXTTOSEND, ircd.Me(), source.Nickname())
-        return
-    }
+    // FIXME: Handle password-protected channels.
 
-    target := args[0]
-    text := args[1]
+    // Channel Name.
+    name := args[0]
 
-    // Create our message.
-    msg := NewPrivateMessage(source, target, text)
+    // The Channel.
+    channel := ircd.FindOrCreateChannel(name)
 
-    // Try to find a client.
-    client := ircd.FindClient(target)
-
-    if client != nil {
-        // client.WriteStringF(":%s PRIVMSG %s :%s", source, n.Nickname(), text)
-        client.PrivateMessage(msg)
-        return
-    }
-
-    // No client found? Look for a channel.
-    channel := ircd.FindChannel(target)
-
-    if channel != nil {
-        channel.PrivateMessage(msg)
-        return
-    }
-
-    // Error out:
-    // FIXME: No Such Nick/Chan...
+    // Join it.
+    client.Join(channel)
 }
