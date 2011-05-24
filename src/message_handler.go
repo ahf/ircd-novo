@@ -32,11 +32,11 @@ type MessageHandler func(*Client, *Message)
 
 var commands map[string] *MessageHandler
 
-func init() {
-    commands = make(map[string] *MessageHandler)
-}
-
 func RegisterMessageHandler(command string, handler MessageHandler) {
+    if commands == nil {
+        commands = make(map[string] *MessageHandler)
+    }
+
     commands[command] = &handler
 }
 
