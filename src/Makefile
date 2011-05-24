@@ -3,6 +3,7 @@ include $(GOROOT)/src/Make.inc
 TARG = ircd-novo
 GOFILES = \
 	channel.go \
+	channel_registry.go \
 	channel_set.go \
 	client.go \
 	client_registry.go \
