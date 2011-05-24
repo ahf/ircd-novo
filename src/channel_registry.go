@@ -40,7 +40,7 @@ func NewChannelRegistry(ircd *Ircd) *ChannelRegistry {
 }
 
 func (this *ChannelRegistry) Find(name string) *Channel {
-    if channel, ok := this.channels[name]; ok {
+    if channel, ok := this.channels[ToLower(name)]; ok {
         return channel
     }
 
@@ -48,11 +48,15 @@ func (this *ChannelRegistry) Find(name string) *Channel {
 }
 
 func (this *ChannelRegistry) FindOrCreate(name string) *Channel {
-    channel := this.Find(name)
+    lowered := ToLower(name)
+    channel := this.Find(lowered)
 
     if channel == nil {
+        // Don't use ToLower() here.
         channel = NewChannel(this.ircd, name)
-        this.channels[name] = channel
+
+        // But use it here.
+        this.channels[lowered] = channel
     }
 
     return channel
@@ -60,7 +64,7 @@ func (this *ChannelRegistry) FindOrCreate(name string) *Channel {
 
 func (this *ChannelRegistry) Unregister(channel *Channel) {
     this.Printf("Unregistering Channel", channel)
-    this.channels[channel.Name()] = nil, false
+    this.channels[ToLower(channel.Name())] = nil, false
 }
 
 func (this *ChannelRegistry) Printf(format string, a...interface{}) {
