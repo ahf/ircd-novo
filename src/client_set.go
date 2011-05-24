@@ -57,3 +57,7 @@ func (this *ClientSet) ForEach(f func (*Client)) {
         f(client)
     }
 }
+
+func (this *ClientSet) Len() int {
+    return len(this.clients)
+}
