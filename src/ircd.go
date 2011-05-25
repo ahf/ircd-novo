@@ -213,3 +213,7 @@ func (this *Ircd) FindOrCreateChannel(name string) *Channel {
 func (this *Ircd) UnregisterChannel(channel *Channel) {
     this.channelRegistry.Unregister(channel)
 }
+
+func (this *Ircd) ForEachChannel(f func (*Channel)) {
+    this.channelRegistry.ForEach(f)
+}

@@ -328,7 +328,7 @@ var replies = map[Numeric] string {
     RPL_WHOISIDLE:          "%s %d %d :seconds idle, signon time",
     RPL_ENDOFWHOIS:         "%s :End of /WHOIS list.",
     RPL_WHOISCHANNELS:      ":%s 319 %s %s :",
-    RPL_LISTSTART:          ":%s 321 %s Channel :Users  Name",
+    RPL_LISTSTART:          ":%s 321 %s Channel :Users  Topic",
     RPL_LIST:               ":%s 322 %s %s %d :%s",
     RPL_LISTEND:            ":%s 323 %s :End of /LIST",
     RPL_CHANNELMODEIS:      ":%s 324 %s %s %s",

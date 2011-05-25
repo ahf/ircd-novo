@@ -28,51 +28,25 @@
 
 package main
 
-type ChannelRegistry struct {
-    ircd *Ircd // Pointer to the IRCd instance.
-
-    // Map channel names to Channels
-    channels map[string] *Channel
+func init() {
+    RegisterMessageHandler("LIST", ListHandler)
 }
 
-func NewChannelRegistry(ircd *Ircd) *ChannelRegistry {
-    return &ChannelRegistry{ircd, make(map[string] *Channel)}
-}
+func ListHandler(client *Client, message *Message) {
+    ircd := client.Ircd()
 
-func (this *ChannelRegistry) Find(name string) *Channel {
-    if channel, ok := this.channels[ToLower(name)]; ok {
-        return channel
-    }
+    client.SendNumeric(RPL_LISTSTART, ircd.Me(), client.Nickname())
 
-    return nil
-}
+    ircd.ForEachChannel(func (channel *Channel) {
+        countCh := channel.ClientCount()
+        topicCh := channel.Topic()
 
-func (this *ChannelRegistry) FindOrCreate(name string) *Channel {
-    lowered := ToLower(name)
-    channel := this.Find(lowered)
+        name := channel.Name()
+        count := <-countCh
+        topic := <-topicCh
 
-    if channel == nil {
-        // Don't use ToLower() here.
-        channel = NewChannel(this.ircd, name)
+        client.SendNumeric(RPL_LIST, ircd.Me(), client.Nickname(), name, count, topic)
+    })
 
-        // But use it here.
-        this.channels[lowered] = channel
-    }
-
-    return channel
-}
-
-func (this *ChannelRegistry) Unregister(channel *Channel) {
-    this.Printf("Unregistering Channel")
-    this.channels[ToLower(channel.Name())] = nil, false
-}
-
-func (this *ChannelRegistry) ForEach(f func (*Channel)) {
-    for _, channel := range this.channels {
-        f(channel)
-    }
-}
-
-func (this *ChannelRegistry) Printf(format string, a...interface{}) {
-    this.ircd.Printf(format, a...)
+    client.SendNumeric(RPL_LISTEND, ircd.Me(), client.Nickname())
 }

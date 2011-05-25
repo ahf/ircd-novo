@@ -14,6 +14,7 @@ GOFILES = \
 	ircd.go \
 	ircd_novo.go \
 	join_handler.go \
+	list_handler.go \
 	listeners.go \
 	match.go \
 	message_handler.go \
