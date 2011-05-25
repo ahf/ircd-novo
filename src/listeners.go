@@ -123,7 +123,7 @@ func (this *BasicListener) Listen() {
 
 func (this *BasicListener) ConnectionHandler(ircd *Ircd, connection net.Conn, remoteAddr string) {
     this.Printf("Incoming Connection from %s to %s (%s %s)", remoteAddr, this.Address(), this.Secure(), this.Protocol())
-    NewClient(ircd, connection, remoteAddr)
+    NewClient(this, ircd, connection, remoteAddr)
 }
 
 type TCPListener struct {

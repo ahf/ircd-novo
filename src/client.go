@@ -54,6 +54,7 @@ type Client struct {
 
     connection net.Conn // The connection.
     readwriter *bufio.ReadWriter // The buffered reader/writer.
+    listener Listener // The listener.
 
     ircd *Ircd // Pointer to our IRCd.
 
@@ -65,7 +66,7 @@ type Client struct {
     isRegistered bool
 }
 
-func NewClient(ircd *Ircd, connection net.Conn, remoteAddr string) {
+func NewClient(listener Listener, ircd *Ircd, connection net.Conn, remoteAddr string) {
     client := new(Client)
 
     // The IRCd.
@@ -115,8 +116,9 @@ func NewClient(ircd *Ircd, connection net.Conn, remoteAddr string) {
     // Use the IP for now.
     client.hostname = address
 
-    // Set connection and create readwriter.
+    // Set connection, listener and create readwriter.
     client.connection = connection
+    client.listener = listener
     client.readwriter = bufio.NewReadWriter(bufio.NewReader(connection), bufio.NewWriter(connection))
 
     // Used for synchronisation once we are done looking up rDNS and do identd
@@ -362,9 +364,12 @@ func (this *Client) RegisteredProtocolHandler() {
     // The IRCd.
     ircd := this.ircd
 
+    // The server information string.
+    server := fmt.Sprintf("%s[%s]", ircd.Me(), this.listener.Address())
+
     // Welcome the client.
     this.SendNumeric(RPL_WELCOME, ircd.Me(), this.Nickname(), ircd.Description(), this.Nickname())
-    this.SendNumeric(RPL_YOURHOST, ircd.Me(), this.Nickname(), "FIXME", VersionFull)
+    this.SendNumeric(RPL_YOURHOST, ircd.Me(), this.Nickname(), server, VersionFull)
 
     // Send MOTD, if any.
     this.SendMotd()
