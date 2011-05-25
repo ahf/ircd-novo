@@ -194,10 +194,14 @@ func (this *Channel) Unregister() {
 }
 
 func (this *Channel) Name() string {
+    // NOTE: This is safe to return without asking our channel handler process,
+    // since a channel name can never be changed and is set upon construction
+    // in NewChannel().
     return this.name
 }
 
 func (this *Channel) String() string {
+    // NOTE: See information in Name().
     return this.name
 }
 
