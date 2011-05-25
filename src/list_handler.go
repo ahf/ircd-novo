@@ -38,11 +38,11 @@ func ListHandler(client *Client, message *Message) {
     client.SendNumeric(RPL_LISTSTART, ircd.Me(), client.Nickname())
 
     ircd.ForEachChannel(func (channel *Channel) {
-        ccc := make(chan int)
-        ct := make(chan string)
+        ccc := make(chan int, 1)
+        ct := make(chan string, 1)
 
-        go channel.ClientCount(ccc)
-        go channel.Topic(ct)
+        channel.ClientCount(ccc)
+        channel.Topic(ct)
 
         name := channel.Name()
         count := <-ccc
