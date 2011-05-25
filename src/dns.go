@@ -44,8 +44,15 @@ func LookupAddress(ip string) chan string {
         }
 
         if len(names) > 0 {
-            // Use the first value.
-            r<-names[0]
+            // Use the first value, but strip the leading ".".
+            host := names[0]
+            l := len(host)
+
+            if host[l - 1] == '.' {
+                r<-host[0:l - 1]
+            } else {
+                r<-host
+            }
         } else {
             // Use the IP
             r<-ip
