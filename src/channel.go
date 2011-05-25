@@ -161,24 +161,12 @@ func (this *Channel) Part(client *Client) {
     this.parting<-client
 }
 
-func (this *Channel) Topic() chan string {
-    c := make(chan string)
-
-    go func() {
-        this.read_topic<-c
-    }()
-
-    return c
+func (this *Channel) Topic(c chan string) {
+    this.read_topic<-c
 }
 
-func (this *Channel) ClientCount() chan int {
-    c := make(chan int)
-
-    go func() {
-        this.read_client_count<-c
-    }()
-
-    return c
+func (this *Channel) ClientCount(c chan int) {
+    this.read_client_count<-c
 }
 
 func (this *Channel) PrivateMessage(message *PrivateMessage) {
