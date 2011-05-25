@@ -186,6 +186,10 @@ func (this *Channel) PrivateMessage(message *PrivateMessage) {
 }
 
 func (this *Channel) Unregister() {
+    if this.clients.Len() != 0 {
+        panic("Bug: Trying to unregister a non-empty channel.")
+    }
+
     this.ircd.UnregisterChannel(this)
 }
 
