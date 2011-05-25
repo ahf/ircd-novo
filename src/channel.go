@@ -51,29 +51,20 @@ type Channel struct {
 }
 
 func NewChannel(ircd *Ircd, name string) *Channel {
-    channel := new(Channel)
+    channel := &Channel {
+        name: name, // Channel Name.
+        timestamp: time.Seconds(), // Timestamp.
+        topic: "", // Empty topic.
+        ircd: ircd, // The IRCd.
+        clients: NewClientSet(), // Our client members.
 
-    // Channel Name.
-    channel.name = name
+        joining: make(chan *Client),
+        parting: make(chan *Client),
+        private_messages: make(chan *PrivateMessage),
 
-    // Timestamp.
-    channel.timestamp = time.Seconds()
-
-    // Default to Empty Topic.
-    channel.topic = ""
-
-    // The IRCd.
-    channel.ircd = ircd
-
-    // Clients.
-    channel.clients = NewClientSet()
-
-    // Channels.
-    channel.joining = make(chan *Client)
-    channel.parting = make(chan *Client)
-    channel.read_topic = make(chan chan string)
-    channel.private_messages = make(chan *PrivateMessage)
-    channel.read_client_count = make(chan chan int)
+        read_topic: make(chan chan string),
+        read_client_count: make(chan chan int),
+    }
 
     // Message Handler.
     go channel.Handler()
