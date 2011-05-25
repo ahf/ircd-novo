@@ -63,11 +63,11 @@ func WhoisHandler(client *Client, message *Message) {
     //     client.SendNumeric(RPL_WHOISOPERATOR)
     // }
 
-    if client.Secure() {
+    if target.Secure() {
         client.SendNumeric(RPL_WHOISSECURE, ircd.Me(), client.Nickname(), target.Nickname())
     }
 
-    if client.WebSocket() {
+    if target.WebSocket() {
         client.SendNumeric(RPL_WHOISWEBSOCKET, ircd.Me(), client.Nickname(), target.Nickname())
     }
 
