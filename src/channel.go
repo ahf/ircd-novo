@@ -41,6 +41,7 @@ type Channel struct {
     joining chan *Client // Channel of Joining Members.
     parting chan *Client // Channel of Members whom are leaving.
     read_topic chan chan string // Channel for synchronous read of the topic.
+    read_client_count chan chan int // Channel for reading the client count of the channel.
     private_messages chan *PrivateMessage // Channel of private messages.
 
     clients *ClientSet // Client Members.
@@ -66,6 +67,7 @@ func NewChannel(ircd *Ircd, name string) *Channel {
     channel.parting = make(chan *Client)
     channel.read_topic = make(chan chan string)
     channel.private_messages = make(chan *PrivateMessage)
+    channel.read_client_count = make(chan chan int)
 
     // Message Handler.
     go channel.Handler()
@@ -130,6 +132,10 @@ func (this *Channel) Handler() {
                 // Send topic.
                 topic_reader<-this.topic
 
+            case client_count_reader := <-this.read_client_count:
+                // Send the client count.
+                client_count_reader<-this.clients.Len()
+
             case message := <-this.private_messages:
                 // Source Client.
                 source := message.Source()
@@ -162,6 +168,12 @@ func (this *Channel) Topic() string {
     c := make(chan string)
     this.read_topic<-c
     return <-c
+}
+
+func (this *Channel) ClientCount() chan int {
+    c := make(chan int)
+    this.read_client_count<-c
+    return c
 }
 
 func (this *Channel) PrivateMessage(message *PrivateMessage) {
