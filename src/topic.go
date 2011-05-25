@@ -28,33 +28,36 @@
 
 package main
 
-func init() {
-    RegisterMessageHandler("LIST", ListHandler)
+import (
+    "time"
+)
+
+type Topic struct {
+    topic string
+    setter string // Hostmask.
+    timestamp int64
 }
 
-func ListHandler(client *Client, message *Message) {
-    ircd := client.Ircd()
+func NewTopic(client *Client, topic string) *Topic {
+    return &Topic {
+        topic: topic,
+        setter: client.String(),
+        timestamp: time.Seconds(),
+    }
+}
 
-    client.SendNumeric(RPL_LISTSTART, ircd.Me(), client.Nickname())
+func (this *Topic) Topic() string {
+    return this.topic
+}
 
-    ircd.ForEachChannel(func (channel *Channel) {
-        ccc := make(chan int, 1)
-        ct := make(chan *Topic, 1)
+func (this *Topic) Setter() string {
+    return this.setter
+}
 
-        channel.ClientCount(ccc)
-        channel.Topic(ct)
+func (this *Topic) Timestamp() int64 {
+    return this.timestamp
+}
 
-        name := channel.Name()
-        count := <-ccc
-        topic := <-ct
-        t := ""
-
-        if topic != nil {
-            t = topic.String()
-        }
-
-        client.SendNumeric(RPL_LIST, ircd.Me(), client.Nickname(), name, count, t)
-    })
-
-    client.SendNumeric(RPL_LISTEND, ircd.Me(), client.Nickname())
+func (this *Topic) String() string {
+    return this.topic
 }

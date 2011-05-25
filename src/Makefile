@@ -27,6 +27,9 @@ GOFILES = \
 	private_message.go \
 	privmsg_handler.go \
 	quit_handler.go \
+	topic.go \
+	topic_handler.go \
+	topic_message.go \
 	version.go \
 
 include $(GOROOT)/src/Make.cmd

@@ -29,32 +29,42 @@
 package main
 
 func init() {
-    RegisterMessageHandler("LIST", ListHandler)
+    RegisterMessageHandler("TOPIC", TopicHandler)
 }
 
-func ListHandler(client *Client, message *Message) {
+func TopicHandler(client *Client, message *Message) {
+    args := message.Arguments()
     ircd := client.Ircd()
 
-    client.SendNumeric(RPL_LISTSTART, ircd.Me(), client.Nickname())
+    // Need at least the channel parameter.
+    if len(args) < 1 {
+        client.SendNumeric(ERR_NEEDMOREPARAMS, ircd.Me(), client.Nickname(), message.Command())
+        return
+    }
 
-    ircd.ForEachChannel(func (channel *Channel) {
-        ccc := make(chan int, 1)
-        ct := make(chan *Topic, 1)
+    // Find Channel.
+    channel := ircd.FindChannel(args[0])
 
-        channel.ClientCount(ccc)
-        channel.Topic(ct)
+    // FIXME: No such channel or nick.
+    if channel == nil {
+        return
+    }
 
-        name := channel.Name()
-        count := <-ccc
-        topic := <-ct
-        t := ""
+    // Read Channel Topic.
+    if len(args) < 2 {
+        c := make(chan *Topic, 1)
+        channel.Topic(c)
+        topic := <-c
 
-        if topic != nil {
-            t = topic.String()
+        if topic == nil {
+            client.SendNumeric(RPL_NOTOPIC, ircd.Me(), client.Nickname(), channel)
+            return
         }
 
-        client.SendNumeric(RPL_LIST, ircd.Me(), client.Nickname(), name, count, t)
-    })
+        client.SendNumeric(RPL_TOPIC, ircd.Me(), client.Nickname(), channel, topic)
+        return
+    }
 
-    client.SendNumeric(RPL_LISTEND, ircd.Me(), client.Nickname())
+    text := args[1]
+    channel.SetTopic(client, text)
 }

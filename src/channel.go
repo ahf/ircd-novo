@@ -37,13 +37,14 @@ type Channel struct {
     ircd *Ircd // Pointer to the IRCd instance.
 
     name string // The name of the channel.
-    topic string // The topic of the channel.
+    topic *Topic // The topic of the channel.
 
     joining chan *Client // Channel of Joining Members.
     parting chan *Client // Channel of Members whom are leaving.
-    read_topic chan chan string // Channel for synchronous read of the topic.
+    read_topic chan chan *Topic // Channel for synchronous read of the topic.
     read_client_count chan chan int // Channel for reading the client count of the channel.
     private_messages chan *PrivateMessage // Channel of private messages.
+    write_topic chan *TopicMessage // Channel to set topic's.
 
     clients *ClientSet // Client Members.
 
@@ -54,7 +55,7 @@ func NewChannel(ircd *Ircd, name string) *Channel {
     channel := &Channel {
         name: name, // Channel Name.
         timestamp: time.Seconds(), // Timestamp.
-        topic: "", // Empty topic.
+        topic: nil, // No topic.
         ircd: ircd, // The IRCd.
         clients: NewClientSet(), // Our client members.
 
@@ -62,8 +63,10 @@ func NewChannel(ircd *Ircd, name string) *Channel {
         parting: make(chan *Client),
         private_messages: make(chan *PrivateMessage),
 
-        read_topic: make(chan chan string),
+        read_topic: make(chan chan *Topic),
         read_client_count: make(chan chan int),
+
+        write_topic: make(chan *TopicMessage),
     }
 
     // Message Handler.
@@ -94,6 +97,12 @@ func (this *Channel) Handler() {
                 this.clients.ForEach(func (client *Client) {
                     client.ChannelJoin(joining_client, this)
                 })
+
+                // Topic, if any.
+                if this.topic != nil {
+                    joining_client.SendNumeric(RPL_TOPIC, ircd.Me(), joining_client.Nickname(), this.name, this.topic)
+                    joining_client.SendNumeric(RPL_TOPICWHOTIME, ircd.Me(), joining_client.Nickname(), this.name, this.topic.Setter(), this.topic.Timestamp())
+                }
 
                 // Client Names.
                 names := this.clients.Names()
@@ -133,6 +142,22 @@ func (this *Channel) Handler() {
                 // Send the client count.
                 client_count_reader<-this.clients.Len()
 
+            case topic_message := <-this.write_topic:
+                // Text.
+                text := topic_message.Text()
+
+                // Source Client.
+                source := topic_message.Source()
+
+                // Set topic.
+                this.topic = NewTopic(source, text)
+
+                // Send update to all members.
+                this.clients.ForEach(func (client *Client) {
+                    // FIXME: WriteStringF ...
+                    client.WriteStringF(":%s TOPIC %s :%s", source, this.name, text)
+                })
+
             case message := <-this.private_messages:
                 // Source Client.
                 source := message.Source()
@@ -161,8 +186,12 @@ func (this *Channel) Part(client *Client) {
     this.parting<-client
 }
 
-func (this *Channel) Topic(c chan string) {
+func (this *Channel) Topic(c chan *Topic) {
     this.read_topic<-c
+}
+
+func (this *Channel) SetTopic(client *Client, text string) {
+    this.write_topic<-NewTopicMessage(client, text)
 }
 
 func (this *Channel) ClientCount(c chan int) {

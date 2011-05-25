@@ -336,7 +336,7 @@ var replies = map[Numeric] string {
     RPL_WHOISLOGGEDIN:      ":%s 330 %s %s %s :is logged in as",
     RPL_NOTOPIC:            ":%s 331 %s %s :No topic is set.",
     RPL_TOPIC:              ":%s 332 %s %s :%s",
-    RPL_TOPICWHOTIME:       ":%s 333 %s %s %s %lu",
+    RPL_TOPICWHOTIME:       ":%s 333 %s %s %s %d",
     RPL_WHOISACTUALLY:      "%s %s :actually using host",
     RPL_INVITING:           ":%s 341 %s %s %s",
     RPL_EXCEPTLIST:         ":%s 348 %s %s %s %s %lu",
