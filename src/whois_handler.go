@@ -28,46 +28,51 @@
 
 package main
 
-type ChannelSet struct {
-    // FIXME: See ClientSet for information about this.
-    channels map[*Channel] bool
+import (
+    "strings"
+)
+
+func init() {
+    RegisterMessageHandler("WHOIS", WhoisHandler)
 }
 
-func NewChannelSet() *ChannelSet {
-    return &ChannelSet{make(map[*Channel] bool)}
-}
+func WhoisHandler(client *Client, message *Message) {
+    args := message.Arguments()
+    ircd := client.Ircd()
 
-func (this *ChannelSet) Insert(channel *Channel) {
-    this.channels[channel] = true
-}
-
-func (this *ChannelSet) Contains(channel *Channel) bool {
-    _, exists := this.channels[channel]
-    return exists
-}
-
-func (this *ChannelSet) Delete(channel *Channel) {
-    this.channels[channel] = false, false
-}
-
-func (this *ChannelSet) ForEach(f func (*Channel)) {
-    for channel, _ := range this.channels {
-        f(channel)
-    }
-}
-
-func (this *ChannelSet) Len() int {
-    return len(this.channels)
-}
-
-func (this *ChannelSet) Names() []string {
-    r := make([]string, len(this.channels))
-    i := 0
-
-    for channel := range this.channels {
-        r[i] = channel.Name()
-        i++
+    if len(args) < 1 {
+        client.SendNumeric(ERR_NEEDMOREPARAMS, client.Ircd().Me(), client.Nickname(), message.Command())
+        return
     }
 
-    return r
+    target := ircd.FindClient(args[0])
+
+    if target == nil {
+        // FIXME: No such nick/chan
+        return
+    }
+
+    // FIXME: Handle local whois too.
+
+    // Send info.
+    client.SendNumeric(RPL_WHOISUSER, ircd.Me(), client.Nickname(), target.Nickname(), target.Username(), target.Hostname(), target.Realname())
+    client.SendNumeric(RPL_WHOISCHANNELS, ircd.Me(), client.Nickname(), target.Nickname(), strings.Join(target.ChannelNames(), " "))
+    client.SendNumeric(RPL_WHOISSERVER, ircd.Me(), client.Nickname(), target.Nickname(), ircd.Me(), ircd.Description())
+
+    // if client is an operator {
+    //     client.SendNumeric(RPL_WHOISOPERATOR)
+    // }
+
+    if client.Secure() {
+        client.SendNumeric(RPL_WHOISSECURE, ircd.Me(), client.Nickname(), target.Nickname())
+    }
+
+    if client.WebSocket() {
+        client.SendNumeric(RPL_WHOISWEBSOCKET, ircd.Me(), client.Nickname(), target.Nickname())
+    }
+
+    // FIXME: Idle Times.
+    // client.SendNumeric(RPL_WHOISIDLE)
+
+    client.SendNumeric(RPL_ENDOFWHOIS, ircd.Me(), client.Nickname(), target.Nickname())
 }

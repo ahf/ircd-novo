@@ -531,6 +531,18 @@ func (this *Client) Ircd() *Ircd {
     return this.ircd
 }
 
+func (this *Client) Secure() bool {
+    return this.listener.Secure() == Secure
+}
+
+func (this *Client) WebSocket() bool {
+    return this.listener.Protocol() == WebSocket
+}
+
+func (this *Client) ChannelNames() []string {
+    return this.channels.Names()
+}
+
 func (this *Client) String() string {
     return fmt.Sprintf("%s!%s@%s", this.Nickname(), this.Username(), this.Hostname())
 }

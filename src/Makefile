@@ -31,5 +31,6 @@ GOFILES = \
 	topic_handler.go \
 	topic_message.go \
 	version.go \
+	whois_handler.go \
 
 include $(GOROOT)/src/Make.cmd
