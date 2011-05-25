@@ -63,7 +63,7 @@ func (this *ChannelRegistry) FindOrCreate(name string) *Channel {
 }
 
 func (this *ChannelRegistry) Unregister(channel *Channel) {
-    this.Printf("Unregistering Channel", channel)
+    this.Printf("Unregistering Channel")
     this.channels[ToLower(channel.Name())] = nil, false
 }
 
