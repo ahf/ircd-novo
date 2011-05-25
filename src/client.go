@@ -500,6 +500,14 @@ func (this *Client) Part(channel *Channel) {
     this.channels.Delete(channel)
 }
 
+func (this *Client) ChannelJoin(source *Client, channel *Channel) {
+    this.WriteStringF(":%s JOIN :%s", source, channel)
+}
+
+func (this *Client) ChannelPart(source *Client, channel *Channel) {
+    this.WriteStringF(":%s PART :%s", source, channel)
+}
+
 // FIXME: Should die in a refactoring session. Only needed by the
 // CommandRegistry.
 func (this *Client) Ircd() *Ircd {

@@ -93,8 +93,7 @@ func (this *Channel) Handler() {
 
                 // Send JOIN message to all clients.
                 this.clients.ForEach(func (client *Client) {
-                    // FIXME: WriteStringF's bad.
-                    client.WriteStringF(":%s JOIN :%s", joining_client, this.name)
+                    client.ChannelJoin(joining_client, this)
                 })
 
                 // Client Names.
@@ -112,8 +111,7 @@ func (this *Channel) Handler() {
 
                 // Send PART message to all clients, including ourself.
                 this.clients.ForEach(func (client *Client) {
-                    // FIXME: WriteStringF's bad.
-                    client.WriteStringF(":%s PART :%s", parting_client, this.name)
+                    client.ChannelPart(parting_client, this)
                 })
 
                 // Remove our client.
