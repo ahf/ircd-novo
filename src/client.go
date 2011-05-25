@@ -447,6 +447,12 @@ func (this *Client) SendMotd() {
 }
 
 func (this *Client) Quit(message string) {
+    // FIXME: Hack: Should be fixed like the description in bug #13.
+    // Send a PART for now.
+    this.channels.ForEach(func (channel *Channel) {
+        channel.Part(this)
+    })
+
     this.WriteStringF(":%s QUIT :%s", this, message)
 
     // The Socket Input Handler will start the chain that kills the other
