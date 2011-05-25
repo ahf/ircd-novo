@@ -5,6 +5,7 @@ GOFILES = \
 	channel.go \
 	channel_registry.go \
 	channel_set.go \
+	channel_utilities.go \
 	client.go \
 	client_registry.go \
 	client_set.go \
