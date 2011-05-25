@@ -34,6 +34,7 @@ import (
     "net"
     "strconv"
     "strings"
+    "time"
 )
 
 type Client struct {
@@ -58,6 +59,8 @@ type Client struct {
 
     channels *ChannelSet // Channels.
 
+    timestamp int64 // Creation time in seconds since UNIX epoch.
+
     // Housekeeping (FIXME: Needs refactoring).
     isRegistered bool
 }
@@ -67,6 +70,9 @@ func NewClient(ircd *Ircd, connection net.Conn, remoteAddr string) {
 
     // The IRCd.
     client.ircd = ircd
+
+    // Timestamp.
+    client.timestamp = time.Seconds()
 
     // IRC Channels.
     client.channels = NewChannelSet()

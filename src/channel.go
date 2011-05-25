@@ -30,6 +30,7 @@ package main
 
 import (
     "strings"
+    "time"
 )
 
 type Channel struct {
@@ -45,6 +46,8 @@ type Channel struct {
     private_messages chan *PrivateMessage // Channel of private messages.
 
     clients *ClientSet // Client Members.
+
+    timestamp int64 // Creation time in seconds since UNIX epoch.
 }
 
 func NewChannel(ircd *Ircd, name string) *Channel {
@@ -52,6 +55,9 @@ func NewChannel(ircd *Ircd, name string) *Channel {
 
     // Channel Name.
     channel.name = name
+
+    // Timestamp.
+    channel.timestamp = time.Seconds()
 
     // Default to Empty Topic.
     channel.topic = ""
