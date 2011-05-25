@@ -164,10 +164,10 @@ func (this *Channel) Part(client *Client) {
     this.parting<-client
 }
 
-func (this *Channel) Topic() string {
+func (this *Channel) Topic() chan string {
     c := make(chan string)
     this.read_topic<-c
-    return <-c
+    return c
 }
 
 func (this *Channel) ClientCount() chan int {
