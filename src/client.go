@@ -479,6 +479,10 @@ func (this *Client) PrivateMessage(message *PrivateMessage) {
     this.WriteString(message.String())
 }
 
+func (this *Client) Notice(message *NoticeMessage) {
+    this.WriteString(message.String())
+}
+
 func (this *Client) Printf(format string, a...interface{}) {
     this.ircd.Printf(this.String() + ": " + format, a...)
 }

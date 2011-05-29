@@ -44,6 +44,7 @@ type Channel struct {
     read_topic chan chan *Topic // Channel for synchronous read of the topic.
     read_client_count chan chan int // Channel for reading the client count of the channel.
     private_messages chan *PrivateMessage // Channel of private messages.
+    notice_messages chan *NoticeMessage // Channel of notice messages.
     write_topic chan *TopicMessage // Channel to set topic's.
 
     clients *ClientSet // Client Members.
@@ -62,6 +63,7 @@ func NewChannel(ircd *Ircd, name string) *Channel {
         joining: make(chan *Client),
         parting: make(chan *Client),
         private_messages: make(chan *PrivateMessage),
+        notice_messages: make(chan *NoticeMessage),
 
         read_topic: make(chan chan *Topic),
         read_client_count: make(chan chan int),
@@ -174,6 +176,21 @@ func (this *Channel) Handler() {
                     // Send message.
                     client.PrivateMessage(message)
                 })
+
+            case message := <-this.notice_messages:
+                // Source client.
+                source := message.Source()
+
+                // Broadcast to everyone, except the source.
+                this.clients.ForEach(func (client *Client) {
+                    if source == client {
+                        // Source.
+                        return
+                    }
+
+                    // Send message.
+                    client.Notice(message)
+                })
         }
     }
 }
@@ -200,6 +217,10 @@ func (this *Channel) ClientCount(c chan int) {
 
 func (this *Channel) PrivateMessage(message *PrivateMessage) {
     this.private_messages<-message
+}
+
+func (this *Channel) Notice(message *NoticeMessage) {
+    this.notice_messages<-message
 }
 
 func (this *Channel) Unregister() {
