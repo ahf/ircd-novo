@@ -87,7 +87,7 @@ cat $misc_dir/generated-file.go
 echo
 echo "package $package"
 echo
-echo "const ("
+echo "var ("
 echo "        $name = []string{"
 
 cat $file | while IFS= read line ; do

@@ -3,10 +3,14 @@ MISC_DIR=../misc
 build_information.go:
 	$(MISC_DIR)/buildinfo.sh --package main > $@
 
+authors.go: ../AUTHORS.md
+	$(MISC_DIR)/file_to_slice.sh --package main --name AuthorsFile --file $< > $@
+
 include $(GOROOT)/src/Make.inc
 
 TARG = ircd-novo
 GOFILES = \
+	authors.go \
 	build_information.go \
 	channel.go \
 	channel_registry.go \
@@ -42,6 +46,6 @@ GOFILES = \
 	version.go \
 	whois_handler.go \
 
-CLEANFILES += build_information.go
+CLEANFILES += authors.go build_information.go
 
 include $(GOROOT)/src/Make.cmd
