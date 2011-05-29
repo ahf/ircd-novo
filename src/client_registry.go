@@ -48,9 +48,9 @@ func (this *ClientRegistry) Find(nick string) *Client {
 }
 
 func (this *ClientRegistry) Register(client *Client) bool {
-    this.Printf("Registering %s", client.Nickname())
+    this.Printf("Registering %s", client.Nick())
 
-    n := ToLower(client.Nickname())
+    n := ToLower(client.Nick())
 
     if _, exists := this.clients[n]; exists {
         return false
@@ -62,7 +62,7 @@ func (this *ClientRegistry) Register(client *Client) bool {
 
 func (this *ClientRegistry) Unregister(client *Client) {
     this.Printf("Unregistering %s", client)
-    this.clients[ToLower(client.Nickname())] = nil, false
+    this.clients[ToLower(client.Nick())] = nil, false
 }
 
 func (this *ClientRegistry) Printf(format string, a...interface{}) {

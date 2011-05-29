@@ -37,7 +37,7 @@ func PartHandler(client *Client, message *Message) {
     ircd := client.Ircd()
 
     if len(args) < 1 {
-        client.SendNumeric(ERR_NEEDMOREPARAMS, ircd.Me(), client.Nickname(), message.Command())
+        client.SendNumeric(ERR_NEEDMOREPARAMS, ircd.Me(), client.Nick(), message.Command())
         return
     }
 

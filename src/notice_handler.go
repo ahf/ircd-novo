@@ -39,12 +39,12 @@ func NoticeHandler(source *Client, message *Message) {
     ircd := source.Ircd()
 
     if count < 1 {
-        source.SendNumeric(ERR_NORECIPIENT, ircd.Me(), source.Nickname(), cmd)
+        source.SendNumeric(ERR_NORECIPIENT, ircd.Me(), source.Nick(), cmd)
         return
     }
 
     if count < 2 {
-        source.SendNumeric(ERR_NOTEXTTOSEND, ircd.Me(), source.Nickname())
+        source.SendNumeric(ERR_NOTEXTTOSEND, ircd.Me(), source.Nick())
         return
     }
 
@@ -58,7 +58,7 @@ func NoticeHandler(source *Client, message *Message) {
     client := ircd.FindClient(target)
 
     if client != nil {
-        // client.WriteStringF(":%s NOTICE %s :%s", source, n.Nickname(), text)
+        // client.WriteStringF(":%s NOTICE %s :%s", source, n.Nick(), text)
         client.Notice(msg)
         return
     }
@@ -71,6 +71,5 @@ func NoticeHandler(source *Client, message *Message) {
         return
     }
 
-    // Error out:
-    // FIXME: No Such Nick/Chan...
+    source.SendNumeric(ERR_NOSUCHNICK, ircd.Me(), source.Nick(), target)
 }

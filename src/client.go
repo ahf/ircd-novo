@@ -368,8 +368,8 @@ func (this *Client) RegisteredProtocolHandler() {
     server := fmt.Sprintf("%s[%s]", ircd.Me(), this.listener.Address())
 
     // Welcome the client.
-    this.SendNumeric(RPL_WELCOME, ircd.Me(), this.Nickname(), ircd.Description(), this.Nickname())
-    this.SendNumeric(RPL_YOURHOST, ircd.Me(), this.Nickname(), server, VersionFull)
+    this.SendNumeric(RPL_WELCOME, ircd.Me(), this.Nick(), ircd.Description(), this.Nick())
+    this.SendNumeric(RPL_YOURHOST, ircd.Me(), this.Nick(), server, VersionFull)
 
     // Send MOTD, if any.
     this.SendMotd()
@@ -431,19 +431,19 @@ func (this *Client) SendMotd() {
     motd := ircd.Motd()
 
     if motd == nil {
-        this.SendNumeric(ERR_NOMOTD, ircd.Me(), this.Nickname())
+        this.SendNumeric(ERR_NOMOTD, ircd.Me(), this.Nick())
         return
     }
 
     lines := *motd
 
-    this.SendNumeric(RPL_MOTDSTART, ircd.Me(), this.Nickname(), ircd.Me())
+    this.SendNumeric(RPL_MOTDSTART, ircd.Me(), this.Nick(), ircd.Me())
 
     for i := range lines {
-        this.SendNumeric(RPL_MOTD, ircd.Me(), this.Nickname(), lines[i])
+        this.SendNumeric(RPL_MOTD, ircd.Me(), this.Nick(), lines[i])
     }
 
-    this.SendNumeric(RPL_ENDOFMOTD, ircd.Me(), this.Nickname())
+    this.SendNumeric(RPL_ENDOFMOTD, ircd.Me(), this.Nick())
 }
 
 func (this *Client) Quit(message string) {
@@ -495,19 +495,19 @@ func (this *Client) RemoteAddress() string {
     return this.address
 }
 
-func (this *Client) Nickname() string {
+func (this *Client) Nick() string {
     return this.nickname
 }
 
-func (this *Client) Username() string {
+func (this *Client) User() string {
     return this.username
 }
 
-func (this *Client) Hostname() string {
+func (this *Client) Host() string {
     return this.hostname
 }
 
-func (this *Client) Realname() string {
+func (this *Client) Real() string {
     return this.realname
 }
 
@@ -548,5 +548,5 @@ func (this *Client) ChannelNames() []string {
 }
 
 func (this *Client) String() string {
-    return fmt.Sprintf("%s!%s@%s", this.Nickname(), this.Username(), this.Hostname())
+    return fmt.Sprintf("%s!%s@%s", this.Nick(), this.User(), this.Host())
 }

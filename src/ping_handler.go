@@ -36,7 +36,7 @@ func PingHandler(client *Client, message *Message) {
     args := message.Arguments()
 
     if len(args) < 1 {
-        client.SendNumeric(ERR_NEEDMOREPARAMS, client.Ircd().Me(), client.Nickname(), message.Command())
+        client.SendNumeric(ERR_NEEDMOREPARAMS, client.Ircd().Me(), client.Nick(), message.Command())
         return
     }
 

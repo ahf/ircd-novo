@@ -102,18 +102,18 @@ func (this *Channel) Handler() {
 
                 // Topic, if any.
                 if this.topic != nil {
-                    joining_client.SendNumeric(RPL_TOPIC, ircd.Me(), joining_client.Nickname(), this.name, this.topic)
-                    joining_client.SendNumeric(RPL_TOPICWHOTIME, ircd.Me(), joining_client.Nickname(), this.name, this.topic.Setter(), this.topic.Timestamp())
+                    joining_client.SendNumeric(RPL_TOPIC, ircd.Me(), joining_client.Nick(), this.name, this.topic)
+                    joining_client.SendNumeric(RPL_TOPICWHOTIME, ircd.Me(), joining_client.Nick(), this.name, this.topic.Setter(), this.topic.Timestamp())
                 }
 
                 // Client Names.
                 names := this.clients.Names()
 
                 // NOTE: See RB codebase for information about the "=" here.
-                joining_client.SendNumeric(RPL_NAMREPLY, ircd.Me(), joining_client.Nickname(), "=", this.name, strings.Join(names, " "))
+                joining_client.SendNumeric(RPL_NAMREPLY, ircd.Me(), joining_client.Nick(), "=", this.name, strings.Join(names, " "))
 
                 // FIXME: This could become a long message for large channels.
-                joining_client.SendNumeric(RPL_ENDOFNAMES, ircd.Me(), joining_client.Nickname(), this.name)
+                joining_client.SendNumeric(RPL_ENDOFNAMES, ircd.Me(), joining_client.Nick(), this.name)
 
 
             case parting_client := <-this.parting:
@@ -166,8 +166,8 @@ func (this *Channel) Handler() {
 
                 // Broadcast to each client, except the source.
                 this.clients.ForEach(func (client *Client) {
-                    // FIXME: Should we compare source.Nickname() with
-                    // client.Nickname() here?
+                    // FIXME: Should we compare source.Nick() with
+                    // client.Nick() here?
                     if source == client {
                         // Don't send message to ourself.
                         return

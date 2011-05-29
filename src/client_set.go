@@ -67,7 +67,7 @@ func (this *ClientSet) Names() []string {
     i := 0
 
     for client := range this.clients {
-        r[i] = client.Nickname()
+        r[i] = client.Nick()
         i++
     }
 

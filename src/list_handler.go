@@ -35,7 +35,7 @@ func init() {
 func ListHandler(client *Client, message *Message) {
     ircd := client.Ircd()
 
-    client.SendNumeric(RPL_LISTSTART, ircd.Me(), client.Nickname())
+    client.SendNumeric(RPL_LISTSTART, ircd.Me(), client.Nick())
 
     ircd.ForEachChannel(func (channel *Channel) {
         ccc := make(chan int, 1)
@@ -53,8 +53,8 @@ func ListHandler(client *Client, message *Message) {
             t = topic.String()
         }
 
-        client.SendNumeric(RPL_LIST, ircd.Me(), client.Nickname(), name, count, t)
+        client.SendNumeric(RPL_LIST, ircd.Me(), client.Nick(), name, count, t)
     })
 
-    client.SendNumeric(RPL_LISTEND, ircd.Me(), client.Nickname())
+    client.SendNumeric(RPL_LISTEND, ircd.Me(), client.Nick())
 }

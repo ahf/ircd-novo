@@ -38,7 +38,7 @@ func TopicHandler(client *Client, message *Message) {
 
     // Need at least the channel parameter.
     if len(args) < 1 {
-        client.SendNumeric(ERR_NEEDMOREPARAMS, ircd.Me(), client.Nickname(), message.Command())
+        client.SendNumeric(ERR_NEEDMOREPARAMS, ircd.Me(), client.Nick(), message.Command())
         return
     }
 
@@ -57,11 +57,11 @@ func TopicHandler(client *Client, message *Message) {
         topic := <-c
 
         if topic == nil {
-            client.SendNumeric(RPL_NOTOPIC, ircd.Me(), client.Nickname(), channel)
+            client.SendNumeric(RPL_NOTOPIC, ircd.Me(), client.Nick(), channel)
             return
         }
 
-        client.SendNumeric(RPL_TOPIC, ircd.Me(), client.Nickname(), channel, topic)
+        client.SendNumeric(RPL_TOPIC, ircd.Me(), client.Nick(), channel, topic)
         return
     }
 

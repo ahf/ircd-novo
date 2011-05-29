@@ -41,7 +41,7 @@ func WhoisHandler(client *Client, message *Message) {
     ircd := client.Ircd()
 
     if len(args) < 1 {
-        client.SendNumeric(ERR_NEEDMOREPARAMS, client.Ircd().Me(), client.Nickname(), message.Command())
+        client.SendNumeric(ERR_NEEDMOREPARAMS, client.Ircd().Me(), client.Nick(), message.Command())
         return
     }
 
@@ -55,24 +55,24 @@ func WhoisHandler(client *Client, message *Message) {
     // FIXME: Handle local whois too.
 
     // Send info.
-    client.SendNumeric(RPL_WHOISUSER, ircd.Me(), client.Nickname(), target.Nickname(), target.Username(), target.Hostname(), target.Realname())
-    client.SendNumeric(RPL_WHOISCHANNELS, ircd.Me(), client.Nickname(), target.Nickname(), strings.Join(target.ChannelNames(), " "))
-    client.SendNumeric(RPL_WHOISSERVER, ircd.Me(), client.Nickname(), target.Nickname(), ircd.Me(), ircd.Description())
+    client.SendNumeric(RPL_WHOISUSER, ircd.Me(), client.Nick(), target.Nick(), target.User(), target.Host(), target.Real())
+    client.SendNumeric(RPL_WHOISCHANNELS, ircd.Me(), client.Nick(), target.Nick(), strings.Join(target.ChannelNames(), " "))
+    client.SendNumeric(RPL_WHOISSERVER, ircd.Me(), client.Nick(), target.Nick(), ircd.Me(), ircd.Description())
 
     // if client is an operator {
     //     client.SendNumeric(RPL_WHOISOPERATOR)
     // }
 
     if target.Secure() {
-        client.SendNumeric(RPL_WHOISSECURE, ircd.Me(), client.Nickname(), target.Nickname())
+        client.SendNumeric(RPL_WHOISSECURE, ircd.Me(), client.Nick(), target.Nick())
     }
 
     if target.WebSocket() {
-        client.SendNumeric(RPL_WHOISWEBSOCKET, ircd.Me(), client.Nickname(), target.Nickname())
+        client.SendNumeric(RPL_WHOISWEBSOCKET, ircd.Me(), client.Nick(), target.Nick())
     }
 
     // FIXME: Idle Times.
     // client.SendNumeric(RPL_WHOISIDLE)
 
-    client.SendNumeric(RPL_ENDOFWHOIS, ircd.Me(), client.Nickname(), target.Nickname())
+    client.SendNumeric(RPL_ENDOFWHOIS, ircd.Me(), client.Nick(), target.Nick())
 }

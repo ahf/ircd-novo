@@ -46,5 +46,5 @@ func HandleMessage(client *Client, message *Message) {
         return
     }
 
-    client.SendNumeric(ERR_UNKNOWNCOMMAND, client.Ircd().Me(), client.Nickname(), message.Command())
+    client.SendNumeric(ERR_UNKNOWNCOMMAND, client.Ircd().Me(), client.Nick(), message.Command())
 }
