@@ -5,3 +5,4 @@
 /utils/novo-mkpasswd/novo-mkpasswd
 /utils/wsnc/wsnc
 _go_.6
+build_information.go

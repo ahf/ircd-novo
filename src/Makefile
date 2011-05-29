@@ -1,7 +1,13 @@
+MISC_DIR=../misc
+
+build_information.go:
+	$(MISC_DIR)/buildinfo.sh --package main > $@
+
 include $(GOROOT)/src/Make.inc
 
 TARG = ircd-novo
 GOFILES = \
+	build_information.go \
 	channel.go \
 	channel_registry.go \
 	channel_set.go \
@@ -35,5 +41,7 @@ GOFILES = \
 	topic_message.go \
 	version.go \
 	whois_handler.go \
+
+CLEANFILES += build_information.go
 
 include $(GOROOT)/src/Make.cmd
