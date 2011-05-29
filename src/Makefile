@@ -20,6 +20,7 @@ GOFILES = \
 	match.go \
 	message_handler.go \
 	misc.go \
+	motd_handler.go \
 	notice_handler.go \
 	notice_message.go \
 	numerics.go \
