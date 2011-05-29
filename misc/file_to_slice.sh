@@ -28,6 +28,7 @@
 file=
 name=
 package=
+misc_dir=$(dirname $0)
 
 while [ $# -gt 0 ] ; do
     case $1 in
@@ -81,7 +82,7 @@ if [ -z $package ] ; then
     exit 1
 fi
 
-cat generated-file.go
+cat $misc_dir/generated-file.go
 
 echo
 echo "package $package"
@@ -89,8 +90,8 @@ echo
 echo "const ("
 echo "        $name = []string{"
 
-cat $file | while read line ; do
-    line=$(echo $line | sed -e 's,\",\\\",g')
+cat $file | while IFS= read line ; do
+    line=$(echo "$line" | sed -e 's,\",\\\",g')
     echo "        \"$line\","
 done
 
