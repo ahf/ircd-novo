@@ -149,6 +149,12 @@ func NewClient(listener Listener, ircd *Ircd, connection net.Conn, remoteAddr st
     // Let the UnregisteredProtocolHandler() know that it's okay to exit and
     // let the RegisteredProtocolHandler() take over now.
     sync<-true
+
+    // Spawn the RegisteredProtocolHandler().  NOTE: This is not a Go-routine,
+    // because we are purposely taking over the current Go-routine spawned by
+    // the network listener.  For more information, please see:
+    // https://github.com/ahf/ircd-novo/issues/17
+    client.RegisteredProtocolHandler()
 }
 
 func (this *Client) InputHandler() {
@@ -346,7 +352,6 @@ func (this *Client) UnregisteredProtocolHandler(sync chan bool) {
                     this.Printf("Synchronisation done")
 
                     // Let the full IRC protocol handler take over now.
-                    go this.RegisteredProtocolHandler()
                     return
                 }
 
