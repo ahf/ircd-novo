@@ -393,6 +393,7 @@ func (this *Client) RegisteredProtocolHandler() {
 
             case <-this.protocol_handler_quit:
                 // We were told to quit.
+                this.Unregister()
                 return
         }
     }
@@ -472,9 +473,6 @@ func (this *Client) Pong(message string) {
 func (this *Client) Close() {
     this.Printf("Closing")
     defer this.Printf("Finished Closing")
-
-    // Unregister the client.
-    this.Unregister()
 
     // Cleanup.
     this.connection.Close()
